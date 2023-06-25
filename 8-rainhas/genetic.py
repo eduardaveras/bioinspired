@@ -16,7 +16,6 @@ Inicialização: aleatória
 Condição de término: Encontrar a solução, ou 10.000 avaliações de fitness
 Fitness?
 
-
 """
 
 class Genetic:
@@ -124,17 +123,11 @@ class Genetic:
         return child1, child2
 
     def single_mutation(self, indiv, geneSet):
-        index = random.randrange(0, len(indiv.dna))
-        print(f"Mutating {indiv.dna} Index: {index} => ", end=' ')
-               
+        index = random.randrange(0, len(indiv.dna))               
         indiv_mutated = list(indiv.dna)
-
         new_gene, alternate = random.sample(geneSet, 2)
-
         indiv_mutated[index] = alternate if new_gene == indiv_mutated[index] else new_gene
-
         dna_mutated = ''.join(indiv_mutated)   
-        print(f"{dna_mutated}", end='\n')
 
         return dna_mutated
 
@@ -167,7 +160,7 @@ class Genetic:
     
 
 if __name__ == '__main__':
-    g = Genetic(4, new_board, population_size=100, recombination_probability=0.3)
+    g = Genetic(8, new_board)
     
     # Test for parent_toournament 
     # p = g.parent_tournament(g.population, 5, 2)
@@ -188,7 +181,7 @@ if __name__ == '__main__':
     #    indiv.show()
     #    print("max fitness:", end=' ')
     #    print(indiv.get_max_fitness(), end='\n')
-
+    
     g.run()
     print(f"Population= {[i.fitness for i in g.population]}", end='\n', sep=',')
 
