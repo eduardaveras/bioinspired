@@ -1,0 +1,150 @@
+
+1 iteration ---------
+
+Population fitnesses: [3, 3, 5, 2, 3, 5, 4, 3, 2, 4, 1, 2, 3, 4, 5, 3, 4, 2, 5, 2, 3, 2, 2, 3, 2, 4, 2, 4, 2, 1, 4, 4, 5, 3, 3, 3, 2, 3, 3, 2, 2, 4, 4, 2, 4, 4, 4, 3, 4, 1, 2, 3, 4, 2, 4, 2, 4, 2, 3, 1, 5, 4, 1, 1, 4, 3, 4, 2, 3, 3, 4, 5, 3, 1, 3, 5, 3, 3, 4, 4, 3, 0, 3, 3, 4, 3, 4, 1, 4, 2, 3, 2, 4, 4, 2, 3, 4, 3, 3, 4]
+Selecting parents: [5, 4, 4, 4, 2]
+Chosen parents: [5, 4]
+Same as the parents: [5, 4]
+Mutating 00101011 Index: 3 =>  00111011
+Mutating 11001001 Index: 3 =>  11011001
+Mutating 00110111 Index: 1 =>  01110111
+Mutating 11111011 Index: 3 =>  11101011
+Mutating 10110010 Index: 7 =>  10110011
+Mutating 00101000 Index: 3 =>  00111000
+Mutating 01101110 Index: 0 =>  11101110
+Mutating 11010111 Index: 5 =>  11010011
+Mutating 10001011 Index: 0 =>  00001011
+Mutating 01111001 Index: 1 =>  00111001
+Mutating 11001100 Index: 3 =>  11011100
+Mutating 11100001 Index: 6 =>  11100011
+Mutating 00110100 Index: 4 =>  00111100
+Mutating 01101111 Index: 7 =>  01101110
+Mutating 11111011 Index: 2 =>  11011011
+Mutating 01101110 Index: 4 =>  01100110
+Mutating 01001011 Index: 4 =>  01000011
+Mutating 10100110 Index: 4 =>  10101110
+Mutating 00111101 Index: 6 =>  00111111
+Mutating 11101111 Index: 4 =>  11100111
+Mutating 11001111 Index: 1 =>  10001111
+Mutating 00000110 Index: 3 =>  00010110
+Mutating 00001011 Index: 0 =>  10001011
+Mutating 11010000 Index: 5 =>  11010100
+Mutating 00000111 Index: 0 =>  10000111
+Mutating 11000011 Index: 5 =>  11000111
+Mutating 10000001 Index: 4 =>  10001001
+Mutating 10011001 Index: 2 =>  10111001
+Mutating 01011111 Index: 3 =>  01001111
+Mutating 10000010 Index: 2 =>  10100010
+Mutating 11111001 Index: 1 =>  10111001
+Mutating 10100100 Index: 5 =>  10100000
+Mutating 00111011 Index: 5 =>  00111111
+Mutating 11101110 Index: 3 =>  11111110
+Mutating 00001011 Index: 5 =>  00001111
+Mutating 11011100 Index: 2 =>  11111100
+Mutating 01000011 Index: 6 =>  01000001
+Mutating 00111111 Index: 2 =>  00011111
+Mutating 10001111 Index: 5 =>  10001011
+Mutating 11000111 Index: 0 =>  01000111
+Mutating 10111001 Index: 4 =>  10110001
+Mutating 10111001 Index: 1 =>  11111001
+Mutating 00001111 Index: 0 =>  10001111
+Mutating 01000001 Index: 2 =>  01100001
+Mutating 10110001 Index: 0 =>  00110001
+Mutating 00110001 Index: 5 =>  00110101
+---------------------------
+
+2 iteration ---------
+
+Population fitnesses: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1]
+Selecting parents: [3, 2, 2, 2, 1]
+Chosen parents: [3, 2]
+Recombining parents =>  Children from crossover: [('00000000', 0), ('01001001', 3)]
+Mutating 01110011 Index: 4 =>  01111011
+Mutating 11100001 Index: 0 =>  01100001
+Mutating 01011000 Index: 0 =>  11011000
+Mutating 01100010 Index: 6 =>  01100000
+Mutating 00011110 Index: 7 =>  00011111
+Mutating 10000011 Index: 0 =>  00000011
+Mutating 11001011 Index: 2 =>  11101011
+Mutating 11100011 Index: 2 =>  11000011
+Mutating 10001011 Index: 3 =>  10011011
+Mutating 10001011 Index: 7 =>  10001010
+Mutating 11001111 Index: 6 =>  11001101
+Mutating 10000110 Index: 5 =>  10000010
+Mutating 11001111 Index: 5 =>  11001011
+Mutating 11100101 Index: 4 =>  11101101
+Mutating 01001001 Index: 6 =>  01001011
+Mutating 11010011 Index: 4 =>  11011011
+Mutating 11100111 Index: 1 =>  10100111
+Mutating 01000111 Index: 3 =>  01010111
+Mutating 11110101 Index: 1 =>  10110101
+Mutating 01101001 Index: 6 =>  01101011
+Mutating 11000100 Index: 5 =>  11000000
+Mutating 00001000 Index: 7 =>  00001001
+Mutating 01111111 Index: 7 =>  01111110
+Mutating 11101011 Index: 5 =>  11101111
+Mutating 10100010 Index: 7 =>  10100011
+Mutating 00111111 Index: 4 =>  00110111
+Mutating 01100110 Index: 2 =>  01000110
+Mutating 11011000 Index: 6 =>  11011010
+Mutating 00000011 Index: 1 =>  01000011
+Mutating 11000011 Index: 2 =>  11100011
+Mutating 10001010 Index: 6 =>  10001000
+Mutating 10000010 Index: 5 =>  10000110
+Mutating 11011011 Index: 5 =>  11011111
+Mutating 10110101 Index: 5 =>  10110001
+Mutating 11000000 Index: 3 =>  11010000
+Mutating 00110111 Index: 0 =>  10110111
+Mutating 10110001 Index: 7 =>  10110000
+---------------------------
+
+3 iteration ---------
+
+Population fitnesses: [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1]
+Selecting parents: [4, 3, 3, 3, 3]
+Chosen parents: [4, 3]
+Same as the parents: [4, 3]
+Mutating 00001101 Index: 0 =>  10001101
+Mutating 10001111 Index: 2 =>  10101111
+Mutating 11000010 Index: 3 =>  11010010
+Mutating 11000001 Index: 6 =>  11000011
+Mutating 11000010 Index: 0 =>  01000010
+Mutating 00110100 Index: 1 =>  01110100
+Mutating 11011000 Index: 7 =>  11011001
+Mutating 00110101 Index: 0 =>  10110101
+Mutating 11001011 Index: 0 =>  01001011
+Mutating 10100111 Index: 0 =>  00100111
+Mutating 10110111 Index: 3 =>  10100111
+Mutating 01010000 Index: 6 =>  01010010
+Mutating 11100111 Index: 2 =>  11000111
+Mutating 00101111 Index: 5 =>  00101011
+Mutating 10110011 Index: 6 =>  10110001
+Mutating 01001111 Index: 7 =>  01001110
+Mutating 11111001 Index: 1 =>  10111001
+Mutating 01100001 Index: 4 =>  01101001
+Mutating 00011111 Index: 5 =>  00011011
+Mutating 01101011 Index: 3 =>  01111011
+Mutating 01001001 Index: 2 =>  01101001
+Mutating 01111111 Index: 6 =>  01111101
+Mutating 10101001 Index: 4 =>  10100001
+Mutating 01101110 Index: 7 =>  01101111
+Mutating 11111100 Index: 0 =>  01111100
+Mutating 01000110 Index: 7 =>  01000111
+Mutating 01100110 Index: 7 =>  01100111
+Mutating 11010010 Index: 1 =>  10010010
+Mutating 01000010 Index: 7 =>  01000011
+Mutating 01001011 Index: 4 =>  01000011
+Mutating 10100111 Index: 0 =>  00100111
+Mutating 00101011 Index: 5 =>  00101111
+Mutating 01001110 Index: 4 =>  01000110
+Mutating 01111101 Index: 7 =>  01111100
+Mutating 01000011 Index: 2 =>  01100011
+---------------------------
+4 . . Q . 
+3 Q . . . 
+2 . . . Q 
+1 . Q . . 
+  1 2 3 4 
+Fitness:  6
+Found the solution, ending...
+Population= [6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]

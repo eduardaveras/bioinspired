@@ -16,7 +16,10 @@ class Board:
 
     def __str__(self):
         return self.dna
-
+    
+    def __len__(self):
+        return self.dna
+    
     def show(self):
         board = self.get_board()
         b = [self.size - 1 - i for i in board]
@@ -35,6 +38,7 @@ class Board:
             print(i, end=' ')
 
         print()
+        print("Fitness: ", self.fitness)
 
     def get_board(self):
         # transform the board list to a binary string
@@ -48,7 +52,10 @@ class Board:
                 board.append(int(self.dna[k:k+s], 2))
             
             return board
-    
+
+    def get_max_fitness(self):
+        return ((self.size-1)*(self.size)/2)
+
     def get_fitness(self):
         board = self.get_board()
         max_fitness = (self.size-1)*(self.size)/2
@@ -70,7 +77,7 @@ class Board:
             if right_diagonal[i] > 1:
                 counter += right_diagonal[i]-1
             diagonal_collisions += counter
-        
+
         return int(max_fitness - (horizontal_collisions + diagonal_collisions))
 
 
@@ -97,8 +104,8 @@ def board_to_binary(board, size):
     return binary
 
 
-def new_board(size):
-    return Board(size)
+def new_board(size, dna=[]):
+    return Board(size, dna)
 
 
 if __name__ == '__main__':
