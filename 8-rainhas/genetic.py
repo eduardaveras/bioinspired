@@ -26,6 +26,7 @@ class Genetic:
                  ):
 
 
+        self.solution_was_found = False
         self.dna_size = dna_size
         self.population_size = population_size
         self.gene_set = gene_set
@@ -33,7 +34,7 @@ class Genetic:
         self.mutation_probability = mutation_probability
         self.children_number = children_number
         self.new_indiv_func = new_indiv_func
-        self.population = self.init_population()
+        self.population = []
         self.max_iterations = max_iterations
         self.iterations = 0
         self.iteration_info = []
@@ -54,6 +55,8 @@ class Genetic:
             od
         end
         """
+        # initilize population
+        self.population = self.init_population()
 
         while not self.finish_condition(self.population):
             self.iterations += 1
@@ -80,9 +83,8 @@ class Genetic:
 
             self.population = self.choose_survivor(self.population + children, self.population_size)
             self.population = sorted(self.population, key=lambda indiv: indiv.fitness, reverse=True)
-            self.iteration_info.append(self.population)
+            self.iteration_info.append([i.fitness for i in self.population])
 
-            #print(f"Best 5 survivors: {[(i.dna, i.fitness) for i in self.population[:5]]}",end='\n', sep=',')
             print("---------------------------")
 
         return min(self.population, key=lambda indiv: indiv.fitness)
@@ -90,7 +92,7 @@ class Genetic:
     def switch_indiv(self, indiv1, indiv2):
         self.population.remove(indiv1)
         self.population.append(indiv2)
-    
+
 
     def finish_condition(self, population):
         best_indiv = max(population, key=lambda indiv: indiv.fitness)
@@ -98,11 +100,13 @@ class Genetic:
         if best_indiv.fitness == Board(self.dna_size).get_max_fitness():
             best_indiv.show()
             print(f"Found the solution, ending...")
+            self.solution_was_found = True
             return True
         
         if self.iterations == self.max_iterations:
+            print("Max iteration number was reached")
             return True
-        
+
         return False
 
        
