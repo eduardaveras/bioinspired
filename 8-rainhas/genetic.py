@@ -36,6 +36,7 @@ class Genetic:
         self.population = self.init_population()
         self.max_iterations = max_iterations
         self.iterations = 0
+        self.iteration_info = []
         self.recombination_probability = recombination_probability
         self.mutation_probability = mutation_probability
 
@@ -79,6 +80,7 @@ class Genetic:
 
             self.population = self.choose_survivor(self.population + children, self.population_size)
             self.population = sorted(self.population, key=lambda indiv: indiv.fitness, reverse=True)
+            self.iteration_info.append(self.population)
 
             #print(f"Best 5 survivors: {[(i.dna, i.fitness) for i in self.population[:5]]}",end='\n', sep=',')
             print("---------------------------")
@@ -159,8 +161,8 @@ class Genetic:
         return sorted(population, key=lambda indiv: indiv.fitness, reverse=True)[:return_size]
     
 
-if __name__ == '__main__':
-    g = Genetic(8, new_board)
+# if __name__ == '__main__':
+    # g = Genetic(8, new_board)
     
     # Test for parent_toournament 
     # p = g.parent_tournament(g.population, 5, 2)
@@ -182,8 +184,8 @@ if __name__ == '__main__':
     #    print("max fitness:", end=' ')
     #    print(indiv.get_max_fitness(), end='\n')
     
-    g.run()
-    print(f"Population= {[i.fitness for i in g.population]}", end='\n', sep=',')
+    # g.run()
+    # print(f"Population= {[i.fitness for i in g.population]}", end='\n', sep=',')
 
     
 
