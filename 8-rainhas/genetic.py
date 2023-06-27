@@ -75,13 +75,14 @@ class Genetic:
                 children = parents
                 print(f"Same as the parents: {[i.fitness for i in children]}" ,end='\n', sep=' ')
 
-            for indiv in self.population:
-                if indiv not in parents and \
-                    random.choices([True, False], weights=[self.mutation_probability, 1-self.mutation_probability], k=1)[0]:
-                        indiv_mutated = self.new_indiv_func(self.dna_size, dna=self.single_mutation(indiv, self.gene_set))
-                        self.switch_indiv(indiv, indiv_mutated)
+            self.population.append(children)
 
-            self.population = self.choose_survivor(self.population + children, self.population_size)
+            for child in children:
+                if random.choices([True, False], weights=[self.mutation_probability, 1-self.mutation_probability], k=1)[0]:
+                    child_mutated = self.new_indiv_func(self.dna_size, dna=self.single_mutation(child, self.gene_set))
+                    self.switch_indiv(child, child_mutated) 
+
+            self.population = self.choose_survivor(self.population, self.population_size)
             self.population = sorted(self.population, key=lambda indiv: indiv.fitness, reverse=True)
             self.iteration_info.append([i.fitness for i in self.population])
 
