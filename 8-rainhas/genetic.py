@@ -92,12 +92,12 @@ class Genetic:
                 children = parents
                 print(f"Same as the parents: {[i.fitness for i in children]}" ,end='\n', sep=' ')
 
-            self.population.append(children)
             # Mutação
             for child in children:
+                self.population.append(child)
                 if random.choices([True, False], weights=[self.mutation_probability, 1-self.mutation_probability], k=1)[0]:
 
-                    dna_mutated = self.single_mutation(child.dna, self.gene_set)
+                    dna_mutated = self.single_mutation(child, self.gene_set)
                     child_mutated = self.new_indiv_func(self.dna_size, dna=dna_mutated)
                     self.switch_indiv(child, child_mutated) # Troca a criança pela criança mutada
 
