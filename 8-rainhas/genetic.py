@@ -20,9 +20,10 @@ Fitness?
 
 class Genetic:
     def __init__(self, dna_size, new_indiv_func, population_size=100, 
-                 gene_set="01", recombination_probability=0.9, 
+                 gene_set="01", recombination_probability=0.9, recombination_method='cutandfill', 
                  mutation_probability=0.4, children_number=2,
-                 max_iterations=10000
+                 max_iterations=10000,
+                 parent_method='tournament', survivor_method='best'
                  ):
 
 
@@ -40,6 +41,9 @@ class Genetic:
         self.iteration_info = []
         self.recombination_probability = recombination_probability
         self.mutation_probability = mutation_probability
+        self.parent_method = parent_method
+        self.recombination_method = recombination_method
+        self.survivor_method = survivor_method
 
     def run(self):
         """
@@ -60,15 +64,28 @@ class Genetic:
 
         while not self.finish_condition(self.population):
             self.iterations += 1
-            children = []
             print(f"\n{self.iterations} iteration ---------\n")
             print(f"Population fitnesses: {[i.fitness for i in self.population]}", end='\n', sep=',')
 
-            parents = self.parent_tournament(self.population, 5, 2)
+            # Escolha dos pais
+            parents = []
+            children = []
 
+            if self.parent_method == 'tournament':
+                parents = self.parent_tournament(self.population, 5, 2)
+            elif self.parent_method == 'spinwheel':
+                parents = self.parent_spinwheel(self.population, 2)
+
+            # Recombinação dos genes
             if random.choices([True, False], weights=[self.recombination_probability, 1-self.recombination_probability], k=1)[0]:
                 print(f"Recombining parents => ", end=' ')
-                child1, child2 = self.crossover_cutandfill(parents[0], parents[1])
+
+                
+                if self.recombination_method == 'cutandfill':
+                    child1, child2 = self.crossover_cutandfill(parents[0], parents[1])
+                # if self.recombination_probability = ''
+
+
                 children = [child1, child2]
                 print(f"Children from crossover: {[(i.dna, i.fitness) for i in children]}", end='\n', sep=',')
             else:
@@ -76,16 +93,21 @@ class Genetic:
                 print(f"Same as the parents: {[i.fitness for i in children]}" ,end='\n', sep=' ')
 
             self.population.append(children)
-
+            # Mutação
             for child in children:
                 if random.choices([True, False], weights=[self.mutation_probability, 1-self.mutation_probability], k=1)[0]:
-                    child_mutated = self.new_indiv_func(self.dna_size, dna=self.single_mutation(child, self.gene_set))
-                    self.switch_indiv(child, child_mutated) 
 
-            self.population = self.choose_survivor(self.population, self.population_size)
+                    dna_mutated = self.single_mutation(child.dna, self.gene_set)
+                    child_mutated = self.new_indiv_func(self.dna_size, dna=dna_mutated)
+                    self.switch_indiv(child, child_mutated) # Troca a criança pela criança mutada
+
+            # Escolha do sobrevivente
+            if self.survivor_method == 'best':
+                self.population = self.choose_survivor(self.population, self.population_size)
+
+
             self.population = sorted(self.population, key=lambda indiv: indiv.fitness, reverse=True)
             self.iteration_info.append([i.fitness for i in self.population])
-
             print("---------------------------")
 
         return min(self.population, key=lambda indiv: indiv.fitness)
@@ -103,7 +125,7 @@ class Genetic:
             print(f"Found the solution, ending...")
             self.solution_was_found = True
             return True
-        
+
         if self.iterations == self.max_iterations:
             print("Max iteration number was reached")
             return True
