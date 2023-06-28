@@ -1,0 +1,212 @@
+[
+    {
+        "run_0": {
+            "iterations": 1952,
+            "std_dev_fitness": 13.24343456207641,
+            "mean_fitness": 22.08
+        }
+    },
+    {
+        "run_1": {
+            "iterations": 5320,
+            "std_dev_fitness": 13.008674874867152,
+            "mean_fitness": 21.89
+        }
+    },
+    {
+        "run_2": {
+            "iterations": 10000,
+            "std_dev_fitness": 12.652861810673503,
+            "mean_fitness": 21.36
+        }
+    },
+    {
+        "run_3": {
+            "iterations": 2689,
+            "std_dev_fitness": 13.160618488505774,
+            "mean_fitness": 22.19
+        }
+    },
+    {
+        "run_4": {
+            "iterations": 458,
+            "std_dev_fitness": 12.882509654566535,
+            "mean_fitness": 21.73
+        }
+    },
+    {
+        "run_5": {
+            "iterations": 8779,
+            "std_dev_fitness": 12.932874931738876,
+            "mean_fitness": 21.74
+        }
+    },
+    {
+        "run_6": {
+            "iterations": 2459,
+            "std_dev_fitness": 12.980492556139767,
+            "mean_fitness": 21.85
+        }
+    },
+    {
+        "run_7": {
+            "iterations": 1685,
+            "std_dev_fitness": 13.006957638125835,
+            "mean_fitness": 22.05
+        }
+    },
+    {
+        "run_8": {
+            "iterations": 10000,
+            "std_dev_fitness": 12.922595714483995,
+            "mean_fitness": 21.78
+        }
+    },
+    {
+        "run_9": {
+            "iterations": 8960,
+            "std_dev_fitness": 12.973567435366418,
+            "mean_fitness": 21.84
+        }
+    },
+    {
+        "run_10": {
+            "iterations": 1066,
+            "std_dev_fitness": 13.029293572561787,
+            "mean_fitness": 21.94
+        }
+    },
+    {
+        "run_11": {
+            "iterations": 7039,
+            "std_dev_fitness": 12.872284257271511,
+            "mean_fitness": 21.64
+        }
+    },
+    {
+        "run_12": {
+            "iterations": 5402,
+            "std_dev_fitness": 13.08979442160953,
+            "mean_fitness": 22.0
+        }
+    },
+    {
+        "run_13": {
+            "iterations": 2883,
+            "std_dev_fitness": 12.847516335852625,
+            "mean_fitness": 21.66
+        }
+    },
+    {
+        "run_14": {
+            "iterations": 10000,
+            "std_dev_fitness": 13.042552472579894,
+            "mean_fitness": 21.97
+        }
+    },
+    {
+        "run_15": {
+            "iterations": 1985,
+            "std_dev_fitness": 13.155358337954913,
+            "mean_fitness": 22.03
+        }
+    },
+    {
+        "run_16": {
+            "iterations": 2454,
+            "std_dev_fitness": 13.063955182103156,
+            "mean_fitness": 22.03
+        }
+    },
+    {
+        "run_17": {
+            "iterations": 3136,
+            "std_dev_fitness": 13.107542408857581,
+            "mean_fitness": 21.99
+        }
+    },
+    {
+        "run_18": {
+            "iterations": 2261,
+            "std_dev_fitness": 13.220797895739878,
+            "mean_fitness": 22.34
+        }
+    },
+    {
+        "run_19": {
+            "iterations": 1928,
+            "std_dev_fitness": 12.97974079094032,
+            "mean_fitness": 21.79
+        }
+    },
+    {
+        "run_20": {
+            "iterations": 26,
+            "std_dev_fitness": 12.790081743288432,
+            "mean_fitness": 21.51
+        }
+    },
+    {
+        "run_21": {
+            "iterations": 823,
+            "std_dev_fitness": 13.013114807762204,
+            "mean_fitness": 21.82
+        }
+    },
+    {
+        "run_22": {
+            "iterations": 3966,
+            "std_dev_fitness": 12.916529990674743,
+            "mean_fitness": 21.72
+        }
+    },
+    {
+        "run_23": {
+            "iterations": 4703,
+            "std_dev_fitness": 13.008283937553024,
+            "mean_fitness": 21.99
+        }
+    },
+    {
+        "run_24": {
+            "iterations": 1039,
+            "std_dev_fitness": 13.05820466220376,
+            "mean_fitness": 22.01
+        }
+    },
+    {
+        "run_25": {
+            "iterations": 179,
+            "std_dev_fitness": 12.983852933547881,
+            "mean_fitness": 21.93
+        }
+    },
+    {
+        "run_26": {
+            "iterations": 10000,
+            "std_dev_fitness": 12.832627049828883,
+            "mean_fitness": 21.58
+        }
+    },
+    {
+        "run_27": {
+            "iterations": 2413,
+            "std_dev_fitness": 12.983837414262391,
+            "mean_fitness": 21.83
+        }
+    },
+    {
+        "run_28": {
+            "iterations": 2361,
+            "std_dev_fitness": 12.900335848341312,
+            "mean_fitness": 21.71
+        }
+    },
+    {
+        "run_29": {
+            "iterations": 2964,
+            "std_dev_fitness": 12.857584182108237,
+            "mean_fitness": 21.6
+        }
+    }
+]
