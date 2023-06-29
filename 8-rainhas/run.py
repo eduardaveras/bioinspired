@@ -1,9 +1,11 @@
 import genetic as g
 import board as eightqueens
-import json
-import time
-import sys, os
 
+__FILENAME = "runs" 
+__NEW_INDIV = eightqueens.new_board
+__METHOD = g.Genetic(8, __NEW_INDIV)
+
+# ---------------------------------
 # Disable
 def outputPrint(i):
     sys.stdout = open('output' + i, 'w')
@@ -15,9 +17,12 @@ def blockPrint():
 def enablePrint():
     sys.stdout = sys.__stdout__
 
-n_runs = 30 
-new_indiv_func = eightqueens.new_board
 
+import json
+import time
+import sys, os
+
+n_runs = 30 
 runs = []
 runs_times = []
 mean_fitness = []
@@ -30,7 +35,7 @@ for r in range(0, n_runs):
     start = time.time()
     enablePrint()
     print("  ->Running: run " + str(r))
-    alg = g.Genetic(8, new_indiv_func)
+    alg = __METHOD 
     blockPrint()
     alg.run()
     enablePrint()
@@ -66,7 +71,7 @@ for r in range(0, n_runs):
 
 test_name = "runs"
 print("Finished in " + str(round(sum(runs_times),2)) + " seconds")
-with open(test_name + '.json', 'w') as outfile:
+with open(__FILENAME + '.json', 'w') as outfile:
     json.dump(runs, outfile, indent=2)    
 
 enablePrint()
