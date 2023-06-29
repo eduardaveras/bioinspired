@@ -1,4 +1,3 @@
-from matplotlib  import pyplot as plt
 import genetic as g
 import board as eightqueens
 import json
@@ -30,8 +29,8 @@ iteration_number = []
 for r in range(0, n_runs):
     start = time.time()
     enablePrint()
-    print("Running: run " + str(r))
-    alg = g.Genetic(4, new_indiv_func)
+    print("  ->Running: run " + str(r))
+    alg = g.Genetic(8, new_indiv_func)
     blockPrint()
     alg.run()
     enablePrint()
@@ -39,12 +38,14 @@ for r in range(0, n_runs):
 
     if alg.solution_was_found:
         _time = round(time.time() - start, 2)
-        print("Solution was found in " + str(_time) +  " seconds")
+        print(" Solution was found in " + str(_time) +  " seconds")
         runs_times.append(_time)
         found_solution += 1 
         iteration_number.append(alg.iterations)
+    else: 
+        print(" Solution was not found")
     
-    # calculate mean fitness
+    # calculate mean fitness and std_dev
     fitness_total = 0
     sum_of_squared_differences = 0
     for p in alg.population:
@@ -60,6 +61,7 @@ for r in range(0, n_runs):
         mean_per_iteration.append(sum(fitness)/len(fitness)) 
 
     runs.append({"run_" + str(r): {"iterations": alg.iterations, "mean_per_iteration": str(mean_per_iteration), "std_dev_fitness": std_dev_fitness[r], "mean_fitness": mean_fitness[r]}})
+    print("[Total time: " + str(round(sum(runs_times),2)) + " seconds]")
 
 
 test_name = "runs"
@@ -68,4 +70,4 @@ with open(test_name + '.json', 'w') as outfile:
     json.dump(runs, outfile, indent=2)    
 
 enablePrint()
-print(found_solution)
+print(found_solution + " solutions were found in " + str(round(sum(runs_times),2)) + " seconds")
