@@ -3,7 +3,17 @@ import board as eightqueens
 
 __FILENAME = "runs" 
 __NEW_INDIV = eightqueens.new_board
-__METHOD = g.Genetic(8, __NEW_INDIV)
+__ARGS = {"dna_size": 8, 
+          "population_size": 100, 
+          "gene_set": "01", 
+          "max_iterations": 10000,
+          "parent_method": "tournament", 
+          "survivor_method": "best",
+          "recombination_method": "cutandfill", 
+          "recombination_probability": 0.9, 
+          "mutation_method": "single",
+          "mutation_probability": 0.4 
+        }
 
 # ---------------------------------
 # Disable
@@ -16,7 +26,6 @@ def blockPrint():
 # Restore
 def enablePrint():
     sys.stdout = sys.__stdout__
-
 
 import json
 import time
@@ -35,7 +44,7 @@ for r in range(0, n_runs):
     start = time.time()
     enablePrint()
     print("  ->Running: run " + str(r))
-    alg = __METHOD 
+    alg = g.Genetic(__NEW_INDIV, **__ARGS)
     blockPrint()
     alg.run()
     enablePrint()
@@ -70,9 +79,9 @@ for r in range(0, n_runs):
 
 
 test_name = "runs"
-print("Finished in " + str(round(sum(runs_times),2)) + " seconds")
+# print("Finished in " + str(round(sum(runs_times),2)) + " seconds")
 with open(__FILENAME + '.json', 'w') as outfile:
     json.dump(runs, outfile, indent=2)    
 
 enablePrint()
-print(found_solution + " solutions were found in " + str(round(sum(runs_times),2)) + " seconds")
+print(str(found_solution) + " solutions of " + str(n_runs) +  " were found in " + str(round(sum(runs_times),2)) + " seconds")

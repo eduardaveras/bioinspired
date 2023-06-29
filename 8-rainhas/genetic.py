@@ -19,7 +19,7 @@ Fitness?
 """
 
 class Genetic:
-    def __init__(self, dna_size, new_indiv_func, population_size=100, 
+    def __init__(self, new_indiv_func, dna_size=8, population_size=100, 
                  gene_set="01", recombination_probability=0.9, 
                  mutation_probability=0.4, children_number=2,
                  max_iterations=10000,
