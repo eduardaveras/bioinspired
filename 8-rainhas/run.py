@@ -31,15 +31,16 @@ for r in range(0, n_runs):
     start = time.time()
     enablePrint()
     print("Running: run " + str(r))
-    alg = g.Genetic(8, new_indiv_func)
+    alg = g.Genetic(4, new_indiv_func)
     blockPrint()
     alg.run()
     enablePrint()
     end = time.time()
 
     if alg.solution_was_found:
-        print("Solution was found in " + str(time.time() - start) +  " seconds")
-        runs_times.append(time.time() - start)
+        _time = round(time.time() - start, 2)
+        print("Solution was found in " + str(_time) +  " seconds")
+        runs_times.append(_time)
         found_solution += 1 
         iteration_number.append(alg.iterations)
     
@@ -52,15 +53,19 @@ for r in range(0, n_runs):
 
     std_dev_fitness.append((sum_of_squared_differences/alg.population_size)**(1/2))
     mean_fitness.append(fitness_total/alg.population_size)
-    
-    # write alg.iterations, std_dev_fitness, mean_fitness to a json
-    runs.append({"run_" + str(r): {"iterations": alg.iterations, "std_dev_fitness": std_dev_fitness[r], "mean_fitness": mean_fitness[r]}})
 
-# json_runs = json.dumps(runs, indent=4)
-# write runs in a json file
-print("Finished in " + str(sum(runs_times)) + " seconds")
-with open('runs.json', 'w') as outfile:
-    json.dump(runs, outfile, indent=4)    
+    # Mean of fitness in each iteration
+    mean_per_iteration = []
+    for fitness in alg.iteration_info:
+        mean_per_iteration.append(sum(fitness)/len(fitness)) 
+
+    runs.append({"run_" + str(r): {"iterations": alg.iterations, "mean_per_iteration": str(mean_per_iteration), "std_dev_fitness": std_dev_fitness[r], "mean_fitness": mean_fitness[r]}})
+
+
+test_name = "runs"
+print("Finished in " + str(round(sum(runs_times),2)) + " seconds")
+with open(test_name + '.json', 'w') as outfile:
+    json.dump(runs, outfile, indent=2)    
 
 enablePrint()
 print(found_solution)

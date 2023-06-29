@@ -1,212 +1,242 @@
 [
-    {
-        "run_0": {
-            "iterations": 1952,
-            "std_dev_fitness": 13.24343456207641,
-            "mean_fitness": 22.08
-        }
-    },
-    {
-        "run_1": {
-            "iterations": 5320,
-            "std_dev_fitness": 13.008674874867152,
-            "mean_fitness": 21.89
-        }
-    },
-    {
-        "run_2": {
-            "iterations": 10000,
-            "std_dev_fitness": 12.652861810673503,
-            "mean_fitness": 21.36
-        }
-    },
-    {
-        "run_3": {
-            "iterations": 2689,
-            "std_dev_fitness": 13.160618488505774,
-            "mean_fitness": 22.19
-        }
-    },
-    {
-        "run_4": {
-            "iterations": 458,
-            "std_dev_fitness": 12.882509654566535,
-            "mean_fitness": 21.73
-        }
-    },
-    {
-        "run_5": {
-            "iterations": 8779,
-            "std_dev_fitness": 12.932874931738876,
-            "mean_fitness": 21.74
-        }
-    },
-    {
-        "run_6": {
-            "iterations": 2459,
-            "std_dev_fitness": 12.980492556139767,
-            "mean_fitness": 21.85
-        }
-    },
-    {
-        "run_7": {
-            "iterations": 1685,
-            "std_dev_fitness": 13.006957638125835,
-            "mean_fitness": 22.05
-        }
-    },
-    {
-        "run_8": {
-            "iterations": 10000,
-            "std_dev_fitness": 12.922595714483995,
-            "mean_fitness": 21.78
-        }
-    },
-    {
-        "run_9": {
-            "iterations": 8960,
-            "std_dev_fitness": 12.973567435366418,
-            "mean_fitness": 21.84
-        }
-    },
-    {
-        "run_10": {
-            "iterations": 1066,
-            "std_dev_fitness": 13.029293572561787,
-            "mean_fitness": 21.94
-        }
-    },
-    {
-        "run_11": {
-            "iterations": 7039,
-            "std_dev_fitness": 12.872284257271511,
-            "mean_fitness": 21.64
-        }
-    },
-    {
-        "run_12": {
-            "iterations": 5402,
-            "std_dev_fitness": 13.08979442160953,
-            "mean_fitness": 22.0
-        }
-    },
-    {
-        "run_13": {
-            "iterations": 2883,
-            "std_dev_fitness": 12.847516335852625,
-            "mean_fitness": 21.66
-        }
-    },
-    {
-        "run_14": {
-            "iterations": 10000,
-            "std_dev_fitness": 13.042552472579894,
-            "mean_fitness": 21.97
-        }
-    },
-    {
-        "run_15": {
-            "iterations": 1985,
-            "std_dev_fitness": 13.155358337954913,
-            "mean_fitness": 22.03
-        }
-    },
-    {
-        "run_16": {
-            "iterations": 2454,
-            "std_dev_fitness": 13.063955182103156,
-            "mean_fitness": 22.03
-        }
-    },
-    {
-        "run_17": {
-            "iterations": 3136,
-            "std_dev_fitness": 13.107542408857581,
-            "mean_fitness": 21.99
-        }
-    },
-    {
-        "run_18": {
-            "iterations": 2261,
-            "std_dev_fitness": 13.220797895739878,
-            "mean_fitness": 22.34
-        }
-    },
-    {
-        "run_19": {
-            "iterations": 1928,
-            "std_dev_fitness": 12.97974079094032,
-            "mean_fitness": 21.79
-        }
-    },
-    {
-        "run_20": {
-            "iterations": 26,
-            "std_dev_fitness": 12.790081743288432,
-            "mean_fitness": 21.51
-        }
-    },
-    {
-        "run_21": {
-            "iterations": 823,
-            "std_dev_fitness": 13.013114807762204,
-            "mean_fitness": 21.82
-        }
-    },
-    {
-        "run_22": {
-            "iterations": 3966,
-            "std_dev_fitness": 12.916529990674743,
-            "mean_fitness": 21.72
-        }
-    },
-    {
-        "run_23": {
-            "iterations": 4703,
-            "std_dev_fitness": 13.008283937553024,
-            "mean_fitness": 21.99
-        }
-    },
-    {
-        "run_24": {
-            "iterations": 1039,
-            "std_dev_fitness": 13.05820466220376,
-            "mean_fitness": 22.01
-        }
-    },
-    {
-        "run_25": {
-            "iterations": 179,
-            "std_dev_fitness": 12.983852933547881,
-            "mean_fitness": 21.93
-        }
-    },
-    {
-        "run_26": {
-            "iterations": 10000,
-            "std_dev_fitness": 12.832627049828883,
-            "mean_fitness": 21.58
-        }
-    },
-    {
-        "run_27": {
-            "iterations": 2413,
-            "std_dev_fitness": 12.983837414262391,
-            "mean_fitness": 21.83
-        }
-    },
-    {
-        "run_28": {
-            "iterations": 2361,
-            "std_dev_fitness": 12.900335848341312,
-            "mean_fitness": 21.71
-        }
-    },
-    {
-        "run_29": {
-            "iterations": 2964,
-            "std_dev_fitness": 12.857584182108237,
-            "mean_fitness": 21.6
-        }
+  {
+    "run_0": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 2.0083991137221697,
+      "mean_fitness": 2.89
     }
+  },
+  {
+    "run_1": {
+      "iterations": 1,
+      "mean_per_iteration": "[3.01]",
+      "std_dev_fitness": 2.112998106956085,
+      "mean_fitness": 3.01
+    }
+  },
+  {
+    "run_2": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 2.095285660715503,
+      "mean_fitness": 3.07
+    }
+  },
+  {
+    "run_3": {
+      "iterations": 6,
+      "mean_per_iteration": "[2.81, 2.83, 2.84, 2.98, 3.07, 3.05]",
+      "std_dev_fitness": 2.197876020161283,
+      "mean_fitness": 3.05
+    }
+  },
+  {
+    "run_4": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 1.9696875386720607,
+      "mean_fitness": 2.82
+    }
+  },
+  {
+    "run_5": {
+      "iterations": 3,
+      "mean_per_iteration": "[2.87, 3.0, 3.02]",
+      "std_dev_fitness": 2.1901541041671018,
+      "mean_fitness": 3.02
+    }
+  },
+  {
+    "run_6": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 2.0418435297544226,
+      "mean_fitness": 2.84
+    }
+  },
+  {
+    "run_7": {
+      "iterations": 2,
+      "mean_per_iteration": "[2.78, 2.84]",
+      "std_dev_fitness": 2.121126351729193,
+      "mean_fitness": 2.84
+    }
+  },
+  {
+    "run_8": {
+      "iterations": 1,
+      "mean_per_iteration": "[3.1]",
+      "std_dev_fitness": 2.3300984957722286,
+      "mean_fitness": 3.1
+    }
+  },
+  {
+    "run_9": {
+      "iterations": 6,
+      "mean_per_iteration": "[2.98, 2.95, 3.08, 3.18, 3.13, 3.23]",
+      "std_dev_fitness": 2.3254672648738786,
+      "mean_fitness": 3.23
+    }
+  },
+  {
+    "run_10": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 1.933986039246406,
+      "mean_fitness": 2.86
+    }
+  },
+  {
+    "run_11": {
+      "iterations": 2,
+      "mean_per_iteration": "[3.27, 3.27]",
+      "std_dev_fitness": 2.307612835811068,
+      "mean_fitness": 3.27
+    }
+  },
+  {
+    "run_12": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 1.962907537302764,
+      "mean_fitness": 2.77
+    }
+  },
+  {
+    "run_13": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 2.072150573679432,
+      "mean_fitness": 2.92
+    }
+  },
+  {
+    "run_14": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 2.0929001409527404,
+      "mean_fitness": 2.94
+    }
+  },
+  {
+    "run_15": {
+      "iterations": 4,
+      "mean_per_iteration": "[2.91, 3.02, 2.97, 2.99]",
+      "std_dev_fitness": 2.175424556264822,
+      "mean_fitness": 2.99
+    }
+  },
+  {
+    "run_16": {
+      "iterations": 1,
+      "mean_per_iteration": "[3.11]",
+      "std_dev_fitness": 2.233196363959067,
+      "mean_fitness": 3.11
+    }
+  },
+  {
+    "run_17": {
+      "iterations": 5,
+      "mean_per_iteration": "[3.12, 3.08, 3.0, 3.02, 3.16]",
+      "std_dev_fitness": 2.3412851171952545,
+      "mean_fitness": 3.16
+    }
+  },
+  {
+    "run_18": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 2.1414406365808976,
+      "mean_fitness": 3.07
+    }
+  },
+  {
+    "run_19": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 2.0540744874517087,
+      "mean_fitness": 2.94
+    }
+  },
+  {
+    "run_20": {
+      "iterations": 10,
+      "mean_per_iteration": "[2.96, 2.95, 3.01, 3.06, 3.15, 3.1, 3.09, 3.13, 3.18, 3.28]",
+      "std_dev_fitness": 2.264822951137682,
+      "mean_fitness": 3.28
+    }
+  },
+  {
+    "run_21": {
+      "iterations": 2,
+      "mean_per_iteration": "[2.87, 2.97]",
+      "std_dev_fitness": 2.0845716586387724,
+      "mean_fitness": 2.97
+    }
+  },
+  {
+    "run_22": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 2.113424708855274,
+      "mean_fitness": 3.1
+    }
+  },
+  {
+    "run_23": {
+      "iterations": 10,
+      "mean_per_iteration": "[2.88, 2.99, 3.04, 3.08, 3.14, 3.16, 3.27, 3.36, 3.31, 3.28]",
+      "std_dev_fitness": 2.323480793981306,
+      "mean_fitness": 3.28
+    }
+  },
+  {
+    "run_24": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 1.9881121698737219,
+      "mean_fitness": 2.87
+    }
+  },
+  {
+    "run_25": {
+      "iterations": 7,
+      "mean_per_iteration": "[2.87, 2.99, 3.0, 2.97, 3.04, 3.14, 3.15]",
+      "std_dev_fitness": 2.218277710296887,
+      "mean_fitness": 3.15
+    }
+  },
+  {
+    "run_26": {
+      "iterations": 0,
+      "mean_per_iteration": "[]",
+      "std_dev_fitness": 1.9830163892414,
+      "mean_fitness": 2.82
+    }
+  },
+  {
+    "run_27": {
+      "iterations": 7,
+      "mean_per_iteration": "[2.98, 3.07, 3.04, 3.08, 3.16, 3.25, 3.35]",
+      "std_dev_fitness": 2.322949848791402,
+      "mean_fitness": 3.35
+    }
+  },
+  {
+    "run_28": {
+      "iterations": 5,
+      "mean_per_iteration": "[3.13, 3.09, 3.13, 3.17, 3.22]",
+      "std_dev_fitness": 2.3525824108838354,
+      "mean_fitness": 3.22
+    }
+  },
+  {
+    "run_29": {
+      "iterations": 2,
+      "mean_per_iteration": "[3.13, 3.19]",
+      "std_dev_fitness": 2.215901622365036,
+      "mean_fitness": 3.19
+    }
+  }
 ]

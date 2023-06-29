@@ -22,7 +22,9 @@ class Genetic:
     def __init__(self, dna_size, new_indiv_func, population_size=100, 
                  gene_set="01", recombination_probability=0.9, 
                  mutation_probability=0.4, children_number=2,
-                 max_iterations=10000
+                 max_iterations=10000,
+                 parent_method="tournament", survivor_method="best",
+                 recombination_method="cutandfill", mutation_method="single"
                  ):
 
 
@@ -40,6 +42,11 @@ class Genetic:
         self.iteration_info = []
         self.recombination_probability = recombination_probability
         self.mutation_probability = mutation_probability
+
+        self.parent_method = parent_method 
+        self.survivor_method = survivor_method
+        self.recombination_method = recombination_method 
+        self.mutation_method = mutation_method
 
     def run(self):
         """
@@ -64,11 +71,25 @@ class Genetic:
             print(f"\n{self.iterations} iteration ---------\n")
             print(f"Population fitnesses: {[i.fitness for i in self.population]}", end='\n', sep=',')
 
-            parents = self.parent_tournament(self.population, 5, 2)
+            # Selection of parents
+            parents = []
+            if self.parent_method == "tournament":
+                parents = self.parent_tournament(self.population, 5, 2)
+            elif self.parent_method == "spinwheel":
+                parents = self.parent_spinwheel(self.population, 2)
+            else:
+                raise Exception("Invalid parent method")
 
             if random.choices([True, False], weights=[self.recombination_probability, 1-self.recombination_probability], k=1)[0]:
                 print(f"Recombining parents => ", end=' ')
-                child1, child2 = self.crossover_cutandfill(parents[0], parents[1])
+
+                # Recombination
+                child1, child2 = None, None
+                if self.recombination_method == "cutandfill":
+                    child1, child2 = self.crossover_cutandfill(parents[0], parents[1])
+                else: 
+                    raise Exception("Invalid mutation method")
+
                 children = [child1, child2]
                 print(f"Children from crossover: {[(i.dna, i.fitness) for i in children]}", end='\n', sep=',')
             else:
@@ -78,16 +99,29 @@ class Genetic:
             for indiv in self.population:
                 if indiv not in parents and \
                     random.choices([True, False], weights=[self.mutation_probability, 1-self.mutation_probability], k=1)[0]:
-                        indiv_mutated = self.new_indiv_func(self.dna_size, dna=self.single_mutation(indiv, self.gene_set))
+
+                        # Mutating
+                        if self.mutation_method == "single":
+                            dna_mutated = self.single_mutation(indiv, self.gene_set)
+                        elif self.mutation_method == "double":
+                            dna_mutated = self.double_mutation(indiv.dnta)
+                        else :
+                            raise Exception("Invalid mutation method")
+
+                        indiv_mutated = self.new_indiv_func(self.dna_size, dna=dna_mutated)
                         self.switch_indiv(indiv, indiv_mutated)
 
-            self.population = self.choose_survivor(self.population + children, self.population_size)
+            # Survivor selection
+            if self.survivor_method == "best":
+                self.population = self.choose_survivor(self.population + children, self.population_size)
+            else: 
+                raise Exception("Invalid mutation method")
+            # elif self.survivor_method == "random":
+
             self.population = sorted(self.population, key=lambda indiv: indiv.fitness, reverse=True)
             self.iteration_info.append([i.fitness for i in self.population])
 
             print("---------------------------")
-
-        return min(self.population, key=lambda indiv: indiv.fitness)
                 
     def switch_indiv(self, indiv1, indiv2):
         self.population.remove(indiv1)
