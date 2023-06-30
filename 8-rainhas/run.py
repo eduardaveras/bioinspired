@@ -39,8 +39,8 @@ def run_(args, filename=__FILENAME, n_runs=30):
         start = time.time()
 
         # Alg running
+        outputPrint(filename)
         alg = g.Genetic(__NEW_INDIV, **args)
-        outputPrint(filename + ".txt")
         alg.run()
         enablePrint()
 
