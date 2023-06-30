@@ -1,5 +1,6 @@
 import random
 from board import new_board, Board
+from datetime import datetime
 """
 
 Primeira parte:
@@ -49,6 +50,7 @@ class Genetic:
         self.mutation_method = mutation_method
 
     def run(self):
+        random.seed(datetime.now().timestamp())
         """
         begin
             initialise population with random candidate solution;
@@ -68,11 +70,11 @@ class Genetic:
         while not self.finish_condition(self.population):
             self.iterations += 1
             children = []
+            parents = []
             print(f"\n{self.iterations} iteration ---------\n")
             print(f"Population fitnesses: {[i.fitness for i in self.population]}", end='\n', sep=',')
 
             # Selection of parents
-            parents = []
             if self.parent_method == "tournament":
                 parents = self.parent_tournament(self.population, 5, 2)
             elif self.parent_method == "spinwheel":
@@ -80,45 +82,53 @@ class Genetic:
             else:
                 raise Exception("Invalid parent method")
 
+            # Recombination
             if random.choices([True, False], weights=[self.recombination_probability, 1-self.recombination_probability], k=1)[0]:
                 print(f"Recombining parents => ", end=' ')
 
-                # Recombination
+                # Recombination occurs
                 child1, child2 = None, None
                 if self.recombination_method == "cutandfill":
                     child1, child2 = self.crossover_cutandfill(parents[0], parents[1])
                 else: 
-                    raise Exception("Invalid mutation method")
+                    raise Exception("Invalid recombinatio method")
 
-                children = [child1, child2]
+                children.append(child1)
+                children.append(child2)
+
                 print(f"Children from crossover: {[(i.dna, i.fitness) for i in children]}", end='\n', sep=',')
             else:
-                children = parents
+                children.append(parents[0])
+                children.append(parents[1])
                 print(f"Same as the parents: {[i.fitness for i in children]}" ,end='\n', sep=' ')
+            
+            for indiv in children:
+                self.population.append(indiv)
+                if random.choices([True, False], weights=[self.mutation_probability, 1-self.mutation_probability], k=1)[0]:
 
-            for indiv in self.population:
-                if indiv not in parents and \
-                    random.choices([True, False], weights=[self.mutation_probability, 1-self.mutation_probability], k=1)[0]:
+                    # Mutating
+                    dna_mutated = None
+                    if self.mutation_method == "single":
+                        dna_mutated = self.single_mutation(indiv, self.gene_set)
+                    elif self.mutation_method == "double":
+                        dna_mutated = self.double_mutation(indiv.dna)
+                    elif self.mutation_method == "singledouble":
+                        dna_mutated = self.double_mutation(indiv.dna)
+                    else :
+                        raise Exception("Invalid mutation method")
 
-                        # Mutating
-                        if self.mutation_method == "single":
-                            dna_mutated = self.single_mutation(indiv, self.gene_set)
-                        elif self.mutation_method == "double":
-                            dna_mutated = self.double_mutation(indiv.dnta)
-                        else :
-                            raise Exception("Invalid mutation method")
-
-                        indiv_mutated = self.new_indiv_func(self.dna_size, dna=dna_mutated)
-                        self.switch_indiv(indiv, indiv_mutated)
+                    indiv_mutated = self.new_indiv_func(self.dna_size, dna=dna_mutated)
+                    print("Mutaded: " + str((indiv_mutated.dna, indiv_mutated.fitness)))
+                    self.switch_indiv(indiv, indiv_mutated)
 
             # Survivor selection
             if self.survivor_method == "best":
                 self.population = self.choose_survivor(self.population + children, self.population_size)
             else: 
-                raise Exception("Invalid mutation method")
+                raise Exception("Invalid survivor method")
             # elif self.survivor_method == "random":
 
-            self.population = sorted(self.population, key=lambda indiv: indiv.fitness, reverse=True)
+            # self.population = sorted(self.population, key=lambda indiv: indiv.fitness, reverse=True)
             self.iteration_info.append([i.fitness for i in self.population])
 
             print("---------------------------")
@@ -129,14 +139,18 @@ class Genetic:
 
 
     def finish_condition(self, population):
-        best_indiv = max(population, key=lambda indiv: indiv.fitness)
+        solutions = [indiv.isSolution for indiv in population]
 
-        if best_indiv.fitness == Board(self.dna_size).get_max_fitness():
-            best_indiv.show()
+        if True in solutions and self.max_iterations != -1:
             print(f"Found the solution, ending...")
             self.solution_was_found = True
             return True
-        
+
+        if False not in solutions:
+            print(f"All population is solution, ending...")
+            self.solution_was_found = True
+            return True
+
         if self.iterations == self.max_iterations:
             print("Max iteration number was reached")
             return True
@@ -199,9 +213,10 @@ class Genetic:
         return sorted(population, key=lambda indiv: indiv.fitness, reverse=True)[:return_size]
     
 
-# if __name__ == '__main__':
-    # g = Genetic(8, new_board)
-    
+if __name__ == '__main__':
+    g = Genetic(new_board, mutation_method="double")
+    g.run() 
+
     # Test for parent_toournament 
     # p = g.parent_tournament(g.population, 5, 2)
     # print(f"Parents= {[i.fitness for i in p]}", end='\n', sep=',')

@@ -13,6 +13,11 @@ class Board:
         
         self.size = size
         self.fitness = self.get_fitness()
+        
+        if self.fitness == self.get_max_fitness():
+            self.isSolution = True
+        else:
+            self.isSolution = False
 
     def __str__(self):
         return self.dna
