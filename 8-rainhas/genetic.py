@@ -215,13 +215,17 @@ class Genetic:
     def choose_survivor(self, return_size):
         bests = sorted(self.population, key=lambda indiv: indiv.fitness, reverse=True)
 
-        for i in range(return_size, len(self.population)):
-            self.population.remove(bests[i])
-    
+        for _ in range(return_size): 
+            print("Removing worst: " + str(bests[-1].fitness))
+            self.population.remove(bests[-1])
+            bests.remove(bests[-1])
+
 
 if __name__ == '__main__':
     g = Genetic(new_board, mutation_method="double")
     g.run() 
+    # g.population = g.init_population()
+    # g.choose_survivor(5)
 
     # Test for parent_toournament 
     # p = g.parent_tournament(g.population, 5, 2)
