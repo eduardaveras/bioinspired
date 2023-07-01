@@ -215,7 +215,7 @@ class Genetic:
     def choose_survivor(self, return_size):
         bests = sorted(self.population, key=lambda indiv: indiv.fitness, reverse=True)
 
-        for _ in range(return_size): 
+        for _ in range(len(self.population) - return_size): 
             print("Removing worst: " + str(bests[-1].fitness))
             self.population.remove(bests[-1])
             bests.remove(bests[-1])
