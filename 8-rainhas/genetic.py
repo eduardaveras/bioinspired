@@ -123,7 +123,10 @@ class Genetic:
 
             # Survivor selection
             if self.survivor_method == "best":
-                self.population = self.choose_survivor(self.population + children, self.population_size)
+                self.choose_survivor(self.population_size)
+            elif self.survivor_method == "gerational":
+                self.population.remove(parents[0])
+                self.population.remove(parents[1])
             else: 
                 raise Exception("Invalid survivor method")
             # elif self.survivor_method == "random":
@@ -209,8 +212,11 @@ class Genetic:
 
         return random.choices(population, weights=fitnesses, k=return_size) 
 
-    def choose_survivor(self, population, return_size):
-        return sorted(population, key=lambda indiv: indiv.fitness, reverse=True)[:return_size]
+    def choose_survivor(self, return_size):
+        bests = sorted(self.population, key=lambda indiv: indiv.fitness, reverse=True)
+
+        for i in range(return_size, len(self.population)):
+            self.population.remove(bests[i])
     
 
 if __name__ == '__main__':
