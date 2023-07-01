@@ -22,6 +22,7 @@ DEFAULT_ARGS = {"dna_size": 8,
 def run_(args, filename=__FILENAME, n_runs=30):
     import json
     import time
+    import numpy as np
 
     runs = []
     runs_times = []
@@ -58,21 +59,22 @@ def run_(args, filename=__FILENAME, n_runs=30):
         runs_times.append(_time)
 
         # calculate mean fitness and std_dev
-        fitness_total = 0
-        sum_of_squared_differences = 0
-        for p in alg.population:
-            fitness_total += p.fitness
-            sum_of_squared_differences += (p.fitness - fitness_total/alg.population_size)**2
-
-        std_dev_fitness.append((sum_of_squared_differences/alg.population_size)**(1/2))
-        mean_fitness.append(fitness_total/alg.population_size)
+        fitness = [p.fitness for p in alg.population]
+        _mean = np.mean(fitness)
+        _std = np.std(fitness)
+        std_dev_fitness.append(_std)
+        mean_fitness.append(_mean)
 
         # Mean of fitness in each iteration
         mean_per_iteration = []
+        best_per_iteration = []
         for fitness in alg.iteration_info:
-            mean_per_iteration.append(sum(fitness)/len(fitness)) 
+            _best = int(np.max(fitness))
+            __mean = np.mean(fitness)
+            mean_per_iteration.append(__mean) 
+            best_per_iteration.append(_best)
 
-        runs.append({"iterations": alg.iterations, "mean_per_iteration": str(mean_per_iteration), "std_dev_fitness": std_dev_fitness[r], "mean_fitness": mean_fitness[r]})
+        runs.append({"found_solution": alg.solution_was_found, "iterations": alg.iterations, "mean_per_iteration": mean_per_iteration, "best_per_iteration": best_per_iteration,  "std": _std, "mean": _mean})
         buff_time = "Time elapsed: " + str(round(sum(runs_times),2)) + " s"
 
         # output
