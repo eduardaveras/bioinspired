@@ -35,7 +35,6 @@ def run_(args, filename=__FILENAME, n_runs=30):
     _time = 0.
     for r in range(0, n_runs):
         # output 
-        display("RUNNING: RUN " + str(r))
         #CLock
         start = time.time()
 
@@ -57,6 +56,7 @@ def run_(args, filename=__FILENAME, n_runs=30):
             buff_2 = "RUN " + str(r) + " STATUS: NOT FOUND   in " + str(_time) + "s and " + str(alg.iterations) + " iterations"
 
         runs_times.append(_time)
+        buff_time = "Time elapsed: " + str(round(sum(runs_times),2)) + " s"
 
         # calculate mean fitness and std_dev
         fitness = [p.fitness for p in alg.population]
@@ -76,11 +76,10 @@ def run_(args, filename=__FILENAME, n_runs=30):
             best_per_iteration.append(_best)
 
         runs.append({"found_solution": alg.solution_was_found, "iterations": alg.iterations, "mean_per_iteration": mean_per_iteration, "best_per_iteration": best_per_iteration,  "std": _std, "mean": _mean, "last_population_fitness": fitness})
-        buff_time = "Time elapsed: " + str(round(sum(runs_times),2)) + " s"
 
         # output
         clear_output()
-        display(buff_time)
+        display("Solutions: " + str(found_solution) + " of " + str(r) + ", " + buff_time)
         display(buff_2)
 
     test_name = "runs"
