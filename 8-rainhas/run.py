@@ -67,6 +67,7 @@ def run_(args, filename=__FILENAME, n_runs=30):
 
         # Mean of fitness in each iteration
         mean_per_iteration = []
+        std_per_iteration = []
         best_per_iteration = []
         for fitness in alg.iteration_info:
             _best = int(np.max(fitness))
@@ -74,7 +75,7 @@ def run_(args, filename=__FILENAME, n_runs=30):
             mean_per_iteration.append(__mean) 
             best_per_iteration.append(_best)
 
-        runs.append({"found_solution": alg.solution_was_found, "iterations": alg.iterations, "mean_per_iteration": mean_per_iteration, "best_per_iteration": best_per_iteration,  "std": _std, "mean": _mean})
+        runs.append({"found_solution": alg.solution_was_found, "iterations": alg.iterations, "mean_per_iteration": mean_per_iteration, "best_per_iteration": best_per_iteration,  "std": _std, "mean": _mean, "last_population_fitness": fitness})
         buff_time = "Time elapsed: " + str(round(sum(runs_times),2)) + " s"
 
         # output

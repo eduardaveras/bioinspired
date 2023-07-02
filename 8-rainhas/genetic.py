@@ -124,7 +124,7 @@ class Genetic:
             # Survivor selection
             if self.survivor_method == "best":
                 self.choose_survivor(self.population_size)
-            elif self.survivor_method == "gerational":
+            elif self.survivor_method == "generational":
                 self.population.remove(parents[0])
                 self.population.remove(parents[1])
             else: 
@@ -210,7 +210,12 @@ class Genetic:
         fitness_sum = sum([indiv.fitness for indiv in population])
         fitnesses = [indiv.fitness/fitness_sum for indiv in population]
 
-        return random.choices(population, weights=fitnesses, k=return_size) 
+        parents = random.choices(population, weights=fitnesses, k=return_size) 
+        
+        if parents[0] == parents[1]:
+            return self.parent_spinwheel(population, return_size)
+
+        return parents
 
     def choose_survivor(self, return_size):
         bests = sorted(self.population, key=lambda indiv: indiv.fitness, reverse=True)
