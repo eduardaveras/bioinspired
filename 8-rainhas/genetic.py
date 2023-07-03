@@ -143,6 +143,7 @@ class Genetic:
 
     def finish_condition(self, population):
         solutions = [indiv.isSolution for indiv in population]
+        print("We found " + str(solutions.count(True)) + " solutions")
 
         if True in solutions and self.max_iterations != -1:
             print(f"Found the solution, ending...")
@@ -227,7 +228,9 @@ class Genetic:
 
 
 if __name__ == '__main__':
-    g = Genetic(new_board, mutation_method="double")
+    g = Genetic(new_board, mutation_method="double", max_iterations=-1)
+    g = Genetic(new_board, mutation_method="single", parent_method="spinwheel", max_iterations=-1)
+    # g.run() 
     g.run() 
     # g.population = g.init_population()
     # g.choose_survivor(5)
