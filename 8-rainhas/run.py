@@ -3,18 +3,18 @@ import board as eightqueens
 from utils import *
 from IPython.display import clear_output, display
 
-__FILENAME = "teste" 
+__FILENAME = "teste"
 __NEW_INDIV = eightqueens.new_board
-DEFAULT_ARGS = {"dna_size": 8, 
-                "population_size": 100, 
-                "gene_set": "01", 
+DEFAULT_ARGS = {"dna_size": 8,
+                "population_size": 100,
+                "gene_set": "01",
                 "max_iterations": 10000,
-                "parent_method": "tournament", 
+                "parent_method": "tournament",
                 "survivor_method": "best",
-                "recombination_method": "cutandfill", 
-                "recombination_probability": 0.9, 
+                "recombination_method": "cutandfill",
+                "recombination_probability": 0.9,
                 "mutation_method": "single",
-                "mutation_probability": 0.4 
+                "mutation_probability": 0.4
         }
 
 # ---------------------------------
@@ -34,7 +34,7 @@ def run_(args, filename=__FILENAME, n_runs=30):
     buff_2 = [""]
     _time = 0.
     for r in range(0, n_runs):
-        # output 
+        # output
         #CLock
         start = time.time()
 
@@ -50,9 +50,9 @@ def run_(args, filename=__FILENAME, n_runs=30):
         if alg.solution_was_found:
             _time = round(time.time() - start, 2)
             buff_2 = "RUN " + str(r) + " STATUS: FOUND       in " + str(_time) + "s and " + str(alg.iterations) + " iterations"
-            found_solution += 1 
+            found_solution += 1
             iteration_number.append(alg.iterations)
-        else: 
+        else:
             buff_2 = "RUN " + str(r) + " STATUS: NOT FOUND   in " + str(_time) + "s and " + str(alg.iterations) + " iterations"
 
         runs_times.append(_time)
@@ -72,7 +72,7 @@ def run_(args, filename=__FILENAME, n_runs=30):
         for fitness in alg.iteration_info:
             _best = int(np.max(fitness))
             __mean = np.mean(fitness)
-            mean_per_iteration.append(__mean) 
+            mean_per_iteration.append(__mean)
             best_per_iteration.append(_best)
 
         runs.append({"found_solution": alg.solution_was_found, "iterations": alg.iterations, "mean_per_iteration": mean_per_iteration, "best_per_iteration": best_per_iteration,  "std": _std, "mean": _mean, "last_population_fitness": fitness})
@@ -85,7 +85,7 @@ def run_(args, filename=__FILENAME, n_runs=30):
     test_name = "runs"
 # print("Finished in " + str(round(sum(runs_times),2)) + " seconds")
     with open(filename + '.json', 'w') as outfile:
-        json.dump(runs, outfile, indent=2)    
+        json.dump(runs, outfile, indent=2)
 
     # display(buff_2)
     clear_output()
