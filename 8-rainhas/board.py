@@ -25,9 +25,6 @@ class Board:
     def __len__(self):
         return self.dna
 
-    # def get_blocks(self):
-
-
     def show(self):
         board = self.get_board()
         b = [self.size - 1 - i for i in board]
@@ -61,32 +58,32 @@ class Board:
 
         return board
 
-def get_max_fitness(self):
-    return ((self.size-1)*(self.size)/2)
+    def get_max_fitness(self):
+        return ((self.size-1)*(self.size)/2)
 
-def get_fitness(self):
-    board = self.get_board()
-    max_fitness = (self.size-1)*(self.size)/2
-    horizontal_collisions = sum([board.count(queen)-1 for queen in board])/2
-    diagonal_collisions = 0
+    def get_fitness(self):
+        board = self.get_board()
+        max_fitness = (self.size-1)*(self.size)/2
+        horizontal_collisions = sum([board.count(queen)-1 for queen in board])/2
+        diagonal_collisions = 0
 
-    n = len(board)
-    left_diagonal = [0] * 2*n
-    right_diagonal = [0] * 2*n
-    for i in range(n):
-        left_diagonal[i + board[i] - 1] += 1
-        right_diagonal[len(board) - i + board[i] - 2] += 1
+        n = len(board)
+        left_diagonal = [0] * 2*n
+        right_diagonal = [0] * 2*n
+        for i in range(n):
+            left_diagonal[i + board[i] - 1] += 1
+            right_diagonal[len(board) - i + board[i] - 2] += 1
 
-    diagonal_collisions = 0
-    for i in range(2*n-1):
-        counter = 0
-        if left_diagonal[i] > 1:
-            counter += left_diagonal[i]-1
-        if right_diagonal[i] > 1:
-            counter += right_diagonal[i]-1
-        diagonal_collisions += counter
+        diagonal_collisions = 0
+        for i in range(2*n-1):
+            counter = 0
+            if left_diagonal[i] > 1:
+                counter += left_diagonal[i]-1
+            if right_diagonal[i] > 1:
+                counter += right_diagonal[i]-1
+            diagonal_collisions += counter
 
-    return int(max_fitness - (horizontal_collisions + diagonal_collisions))
+        return int(max_fitness - (horizontal_collisions + diagonal_collisions))
 
 
 def binary_to_board(binary, size):
@@ -101,6 +98,7 @@ def binary_to_board(binary, size):
 def board_to_binary(board, size):
     # transform the board list to a binary string
     binary = ''
+    size = size - 1
     # 0 até size-1
     for i in range(size):
         num_bin = bin(board[i])[2:]
