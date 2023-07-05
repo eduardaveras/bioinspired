@@ -249,13 +249,16 @@ class Genetic:
         return best_parents[:return_size]
 
     def parent_spinwheel(self, population, return_size):
-        fitness_sum = sum([indiv.fitness for indiv in population])
-        fitnesses = [indiv.fitness/fitness_sum for indiv in population]
+        parents = []
 
-        parents = random.choices(population, weights=fitnesses, k=return_size)
+        for _ in range(return_size):
+            # fitness_sum = sum([indiv.fitness for indiv in population])
+            fitnesses = [indiv.fitness for indiv in population]
 
-        if parents[0] == parents[1]:
-            return self.parent_spinwheel(population, return_size)
+            choice = random.choices(population, weights=fitnesses, k=1)[0]
+
+            parents.append(choice)
+            population.remove(choice)
 
         return parents
 
@@ -269,14 +272,23 @@ class Genetic:
 
 
 if __name__ == '__main__':
-    g = Genetic(new_board)
-    g.population = g.init_population()
+    g = Genetic(new_board, max_iterations=10000, parent_method="tournament", mutation_method="single", survivor_method="generational")
+    g.run()
+    solutions = []
+
+    for indiv in g.population:
+        if indiv.isSolution and indiv.dna not in [i.dna for i in solutions]:
+            solutions.append(indiv)
+            g.population.remove(indiv)
+
+    for s in solutions:
+        s.show()
     # dna_1 = board_to_binary([0, 2, 4, 1, 5, 3, 6, 7], 8)
     # dna_2 = board_to_binary([7, 6, 5, 4, 3, 2, 1, 0], 8)
     # g.population[0] = new_board(8, dna_1) 
     # g.population[1] = new_board(8, dna_2)
-    childs = g.crossover_cutandfill(g.population[0], g.population[1])
-    g.run()
+    # parents = g.parent_tournament(g.population, 5, 2)
+    # g.run()
     # g.crossover_cutandfill(g.population[0], g.population[1])
     # g = Genetic(new_board, mutation_method="single", parent_method="spinwheel", max_iterations=-1)
     # g.run()

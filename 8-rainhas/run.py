@@ -92,4 +92,6 @@ def run_(args, filename=__FILENAME, n_runs=30):
     display(str(found_solution) + " solutions of " + str(n_runs) +  " were found in " + str(round(sum(runs_times),2)) + " seconds")
 
 if __name__ == "__main__":
-    run_(DEFAULT_ARGS)
+    args = DEFAULT_ARGS
+    args["max_iterations"] = -1
+    run_(args)
