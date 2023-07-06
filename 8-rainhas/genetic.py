@@ -238,6 +238,18 @@ class Genetic:
 
         return ''.join(genes)
 
+    def pertube_mutation(self, indiv):
+        genes = self.gene_block(indiv)
+        index = sorted(random.sample(range(len(genes)), 2))
+        print(index[0], index[1])
+        buff = ''.join([0] * index[0]) + '^' + ''.join((index[1] - index[0] - 1) * [0]) + '^'
+        print(buff)
+
+        # We rearrange the genes between the two indexes
+        new_genes = genes[:index[0]] + random.sample(genes[index[0]:index[1]], index[1] - index[0]) + genes[index[1]:]
+
+        return ''.join(new_genes)
+
 
     def parent_tournament(self, population, choices_size, return_size):
         list_parents = random.sample(population, choices_size)
@@ -272,17 +284,26 @@ class Genetic:
 
 
 if __name__ == '__main__':
-    g = Genetic(new_board, max_iterations=10000, parent_method="tournament", mutation_method="single", survivor_method="generational")
-    g.run()
-    solutions = []
+    g = Genetic(new_board, population_size=20, max_iterations=10000, parent_method="tournament", mutation_method="single", survivor_method="generational")
 
-    for indiv in g.population:
-        if indiv.isSolution and indiv.dna not in [i.dna for i in solutions]:
-            solutions.append(indiv)
-            g.population.remove(indiv)
+    for i in g.init_population()[:4]:
+        print(i.get_board())
+        # print("Depois da mutação:")
+        i.dna = g.pertube_mutation(i)
+        print(i.get_board())
+        print()
 
-    for s in solutions:
-        s.show()
+    
+    # g.run()
+    # solutions = []
+
+    # for indiv in g.population:
+    #     if indiv.isSolution and indiv.dna not in [i.dna for i in solutions]:
+    #         solutions.append(indiv)
+    #         g.population.remove(indiv)
+
+    # for s in solutions:
+    #     s.show()
     # dna_1 = board_to_binary([0, 2, 4, 1, 5, 3, 6, 7], 8)
     # dna_2 = board_to_binary([7, 6, 5, 4, 3, 2, 1, 0], 8)
     # g.population[0] = new_board(8, dna_1) 
