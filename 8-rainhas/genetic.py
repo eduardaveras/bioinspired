@@ -252,6 +252,17 @@ class Genetic:
 
         return ''.join(new_genes)
 
+    def insertion_mutation(self, indiv):
+        genes = self.gene_block(indiv)
+        index = sorted(random.sample(range(len(genes)), 2))
+        if index[0] == index[1] + 1:
+            index[1] += 1
+        
+        print(index[0], index[1])
+        
+        new_genes = genes[:index[0]] + genes[index[0]+1:index[1]] + [genes[index[0]]] + genes[index[1]:]
+        print(new_genes)
+        return ''.join(new_genes)
 
     def parent_tournament(self, population, choices_size, return_size):
         list_parents = random.sample(population, choices_size)
