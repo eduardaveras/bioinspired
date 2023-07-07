@@ -21,7 +21,7 @@ Fitness?
 
 class Genetic:
     def __init__(self, new_indiv_func, dna_size=8, population_size=100, max_iterations=10000,
-                 genotipe_size=3, gene_set="01",
+                 genotipe_size=3, gene_set="01", chrildren_size=2,
                  recombination_method="cutandfill", recombination_probability=0.9,
                  mutation_method="single", mutation_probability=0.4,
                  parent_method="tournament", survivor_method="best",
@@ -113,6 +113,8 @@ class Genetic:
                         dna_mutated = self.double_mutation(indiv)
                     elif self.mutation_method == "singledouble":
                         dna_mutated = self.double_mutation(indiv)
+                    elif self.mutation_method == "pertube":
+                        dna_mutated = self.pertube_mutation(indiv)
                     else :
                         raise Exception("Invalid mutation method")
 
@@ -186,26 +188,29 @@ class Genetic:
         genes2_ = genes2_left
 
         for g in (genes2_right + genes2_left):
-            if g not in genes1_left:
+            if g not in genes1_left and len(genes1_) <= n:
                 genes1_.append(g)
 
         for g in (genes1_right + genes1_left):
-            if g not in genes2_left:
+            if g not in genes2_left and len(genes2_) <= n:
                 genes2_.append(g)
 
         # Dúvida?? Fizemos isso pois o tamanho retorna erradO!
-        while len(genes1_) != n and len(genes1_) < n:
+        while len(genes1_) != n and len(genes1_) <= n:
             print(len(genes1_), n)
             i = random.choice(range(0,n))
             if i not in genes1_:
                 genes1_.append(random.choice(genes2_right + genes2_left))
 
-        while len(genes2_) != n and len(genes2_) < n:
+        while len(genes2_) != n and len(genes2_) <= n:
             i = random.choice(range(0,n))
             if i not in genes2_:
                 genes2_.append(random.choice(genes1_right + genes1_left))
 
+        # print(genes1_(genes2_)
+
         child1 = self.new_indiv_func(self.dna_size, dna=''.join(genes1_))
+
         child2 = self.new_indiv_func(self.dna_size, dna=''.join(genes2_))
 
         return child1, child2
@@ -241,9 +246,6 @@ class Genetic:
     def pertube_mutation(self, indiv):
         genes = self.gene_block(indiv)
         index = sorted(random.sample(range(len(genes)), 2))
-        print(index[0], index[1])
-        buff = ''.join([0] * index[0]) + '^' + ''.join((index[1] - index[0] - 1) * [0]) + '^'
-        print(buff)
 
         # We rearrange the genes between the two indexes
         new_genes = genes[:index[0]] + random.sample(genes[index[0]:index[1]], index[1] - index[0]) + genes[index[1]:]
@@ -284,14 +286,15 @@ class Genetic:
 
 
 if __name__ == '__main__':
-    g = Genetic(new_board, population_size=20, max_iterations=10000, parent_method="tournament", mutation_method="single", survivor_method="generational")
+    g = Genetic(new_board, dna_size=16, population_size=5, genotipe_size=4)
 
-    for i in g.init_population()[:4]:
-        print(i.get_board())
+    g.run()
+    # for i in g.init_population()[:4]:
+        # print(i.get_board())
         # print("Depois da mutação:")
-        i.dna = g.pertube_mutation(i)
-        print(i.get_board())
-        print()
+        # i.dna = g.pertube_mutation(i)
+        # print(i.get_board())
+        # print()
 
     
     # g.run()

@@ -15,10 +15,10 @@ class Board:
             # dna = [random.randrange(0, 2) for i in range(size * (len(bin(size - 1)) - 2))]
 
         # dna to string
-        self.dna = ''.join(map(str, dna))
-
         self.size = size
+        self.dna = dna
         self.fitness = self.get_fitness()
+        # self.dna = ''.join(map(str, dna))
 
         if self.fitness == self.get_max_fitness():
             self.isSolution = True

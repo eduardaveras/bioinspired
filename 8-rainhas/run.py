@@ -13,7 +13,7 @@ DEFAULT_ARGS = {"dna_size": 8,
                 "survivor_method": "best",
                 "recombination_method": "cutandfill",
                 "recombination_probability": 0.9,
-                "mutation_method": "single",
+                "mutation_method": "double",
                 "mutation_probability": 0.4
         }
 
