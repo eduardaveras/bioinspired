@@ -1,5 +1,5 @@
 import random
-from board import new_board, Board, board_to_binary
+from board import new_board, Board, board_to_binary, binary_to_board
 from datetime import datetime
 """
 
@@ -23,7 +23,7 @@ class Genetic:
     def __init__(self, new_indiv_func, dna_size=8, population_size=100, max_iterations=10000,
                  genotipe_size=3, gene_set="01", chrildren_size=2,
                  recombination_method="cutandfill", recombination_probability=0.9,
-                 mutation_method="single", mutation_probability=0.4,
+                 mutation_method="double", mutation_probability=0.4,
                  parent_method="tournament", survivor_method="best",
                  ):
 
@@ -89,6 +89,8 @@ class Genetic:
                 child1, child2 = None, None
                 if self.recombination_method == "cutandfill":
                     child1, child2 = self.crossover_cutandfill(parents[0], parents[1])
+                elif self.recombination_method == "pmx":
+                    child1, child2 = self.crossover_pmx(parents[0], parents[1])
                 else:
                     raise Exception("Invalid recombinatio method")
 
@@ -115,6 +117,8 @@ class Genetic:
                         dna_mutated = self.double_mutation(indiv)
                     elif self.mutation_method == "pertube":
                         dna_mutated = self.pertube_mutation(indiv)
+                    elif self.mutation_method == "insertion":
+                        dna_mutated = self.insertion_mutation(indiv)
                     else :
                         raise Exception("Invalid mutation method")
 
@@ -171,6 +175,55 @@ class Genetic:
 
         return population
 
+    def crossover_pmx(self, parent1, parent2):
+        n = self.dna_size
+
+        index = sorted(random.sample(range(n), 2))
+
+        children_dna = []
+
+        for i in [0,1]: 
+            if i == 0:
+                genes1 = self.gene_block(parent1)
+                genes2 = self.gene_block(parent2)
+            else:
+                genes1 = self.gene_block(parent2)
+                genes2 = self.gene_block(parent1)
+
+            genes1_ = (['']*8)[:index[0]] + genes1[index[0]:index[1] + 1] + (['']*8)[index[1] + 1:]
+            genes2_ = (['']*8)[:index[0]] + genes2[index[0]:index[1] + 1] + (['']*8)[index[1] + 1:]
+
+            # Debug purpose
+            # genes1___ = ([0]*8)[:index[0]] + binary_to_board(''.join(genes1), 8)[index[0]:index[1]] + ([0]*8)[index[1]:]
+            # genes2___ = ([0]*8)[:index[0]] + binary_to_board(''.join(genes1), 8)[index[0]:index[1]] + ([0]*8)[index[1]:]
+            print(parent1.get_board())
+            print(parent2.get_board())
+
+            for g in range(index[0], index[1] + 1):
+
+                if genes2[g] in genes1[index[0]:index[1] + 1]:
+                    continue
+
+                index2 = genes2.index(genes1[g])
+
+                while index[0] <= index2 <= index[1]:
+                    index2 = genes2.index(genes1[index2])
+
+                if genes1_[index2] != '':
+                    index2 = genes2.index(genes1_[index2])
+
+                genes1_[index2] = genes2[g]
+
+                # genes1___[index2] = int(genes2[g],2)
+
+            for g in range(n):
+                if genes1_[g] == '':
+                    genes1_[g] = genes2[g]
+
+            children_dna.append(''.join(genes1_))
+        
+        return self.new_indiv_func(self.dna_size, dna=children_dna[0]), self.new_indiv_func(self.dna_size, dna=children_dna[1])
+
     def crossover_cutandfill(self, parent1, parent2):
         n = self.dna_size
 
@@ -184,8 +237,8 @@ class Genetic:
         genes1_right = genes1[cut:]
         genes2_right = genes2[cut:]
 
-        genes1_ = genes1_left
-        genes2_ = genes2_left
+        genes1_ = genes1_left.copy()
+        genes2_ = genes2_left.copy()
 
         for g in (genes2_right + genes2_left):
             if g not in genes1_left and len(genes1_) <= n:
@@ -255,13 +308,13 @@ class Genetic:
     def insertion_mutation(self, indiv):
         genes = self.gene_block(indiv)
         index = sorted(random.sample(range(len(genes)), 2))
-        if index[0] == index[1] + 1:
-            index[1] += 1
-        
+
         print(index[0], index[1])
-        
+
         new_genes = genes[:index[0]] + genes[index[0]+1:index[1]] + [genes[index[0]]] + genes[index[1]:]
+
         print(new_genes)
+
         return ''.join(new_genes)
 
     def parent_tournament(self, population, choices_size, return_size):
@@ -297,9 +350,20 @@ class Genetic:
 
 
 if __name__ == '__main__':
-    g = Genetic(new_board, dna_size=16, population_size=5, genotipe_size=4)
+    g = Genetic(new_board, recombination_method="pmx", population_size=4)
+    # g.run()
+    g.population = g.init_population()
 
-    g.run()
+    g.population[0].dna = board_to_binary([2, 4, 6, 3, 0, 5, 1, 7], 8)
+    g.population[1].dna = board_to_binary([5, 1, 7, 0, 3, 6, 4, 2], 8)
+
+    g.crossover_pmx(g.population[0], g.population[1])
+
+    # g.population[0] = [0, 5, 1, 7, 4, 2, 3, 6]
+# [0, 7, 6, 1, 3, 4, 2, 5]
+    
+
+    # g.run()
     # for i in g.init_population()[:4]:
         # print(i.get_board())
         # print("Depois da mutação:")

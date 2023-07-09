@@ -20,6 +20,9 @@ class Board:
         self.fitness = self.get_fitness()
         # self.dna = ''.join(map(str, dna))
 
+        if not self.canExist():
+            raise Exception("Invalid board")
+
         if self.fitness == self.get_max_fitness():
             self.isSolution = True
         else:
@@ -93,6 +96,13 @@ class Board:
 
         return int(max_fitness - (horizontal_collisions + diagonal_collisions))
 
+    def canExist(self):
+        for i in range(0, self.size):
+            if self.get_board().count(i) > 1:
+                return False
+
+        return True
+
 
 def binary_to_board(binary, size):
     # binary string board to list
@@ -107,11 +117,10 @@ def binary_to_board(binary, size):
 def board_to_binary(board, size):
     # transform the board list to a binary string
     binary = ''
-    size = size - 1
     # 0 até size-1
     for i in range(size):
         num_bin = bin(board[i])[2:]
-        bin_size = len(bin(size)) - 2
+        bin_size = len(bin(size - 1)) - 2
         for j in range(len(num_bin), bin_size, 1):
             binary += '0'
         binary += bin(board[i])[2:]
