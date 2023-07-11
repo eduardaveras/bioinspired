@@ -190,8 +190,8 @@ class Genetic:
                 genes1 = self.gene_block(parent2)
                 genes2 = self.gene_block(parent1)
 
-            genes1_ = (['']*8)[:index[0]] + genes1[index[0]:index[1] + 1] + (['']*8)[index[1] + 1:]
-            genes2_ = (['']*8)[:index[0]] + genes2[index[0]:index[1] + 1] + (['']*8)[index[1] + 1:]
+            genes1_ = (['']*n)[:index[0]] + genes1[index[0]:index[1] + 1] + (['']*n)[index[1] + 1:]
+            genes2_ = (['']*n)[:index[0]] + genes2[index[0]:index[1] + 1] + (['']*n)[index[1] + 1:]
 
             # Debug purpose
             # genes1___ = ([0]*8)[:index[0]] + binary_to_board(''.join(genes1), 8)[index[0]:index[1]] + ([0]*8)[index[1]:]
@@ -350,12 +350,12 @@ class Genetic:
 
 
 if __name__ == '__main__':
-    g = Genetic(new_board, recombination_method="pmx", population_size=4)
+    g = Genetic(new_board, recombination_method="pmx", population_size=4, genotipe_size=4, dna_size=16)
     # g.run()
     g.population = g.init_population()
 
-    g.population[0].dna = board_to_binary([2, 4, 6, 3, 0, 5, 1, 7], 8)
-    g.population[1].dna = board_to_binary([5, 1, 7, 0, 3, 6, 4, 2], 8)
+    # g.population[0].dna = board_to_binary([2, 4, 6, 3, 0, 5, 1, 7], 8)
+    # g.population[1].dna = board_to_binary([5, 1, 7, 0, 3, 6, 4, 2], 8)
 
     g.crossover_pmx(g.population[0], g.population[1])
 
