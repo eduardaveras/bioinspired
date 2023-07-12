@@ -42,6 +42,17 @@ def run_(args, filename=__FILENAME, n_runs=30):
         outputPrint(filename)
         alg = g.Genetic(__NEW_INDIV, **args)
         alg.run()
+
+        it = alg.iterations
+        if it == 0:
+            alg.run()
+            it = alg.iterations
+        if it == 0:
+            alg.run()
+            it = alg.iterations
+        if it == 0:
+            alg.run()
+
         enablePrint()
 
         end = time.time()

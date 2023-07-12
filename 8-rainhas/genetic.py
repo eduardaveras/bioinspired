@@ -21,7 +21,7 @@ Fitness?
 
 class Genetic:
     def __init__(self, new_indiv_func, dna_size=8, population_size=100, max_iterations=10000,
-                 genotipe_size=3, gene_set="01", chrildren_size=2,
+                 genotipe_size=3, gene_set="01", pair_children_size=1,
                  recombination_method="cutandfill", recombination_probability=0.9,
                  mutation_method="double", mutation_probability=0.4,
                  parent_method="tournament", survivor_method="best",
@@ -42,7 +42,8 @@ class Genetic:
         self.iteration_info = []
         self.recombination_probability = recombination_probability
         self.mutation_probability = mutation_probability
-
+        self.pair_children_size = pair_children_size
+        # Methods
         self.parent_method = parent_method
         self.survivor_method = survivor_method
         self.recombination_method = recombination_method
@@ -74,57 +75,58 @@ class Genetic:
             print(f"Population fitnesses: {[i.fitness for i in self.population]}", end='\n', sep=',')
 
             # Selection of parents
-            if self.parent_method == "tournament":
-                parents = self.parent_tournament(self.population, 5, 2)
-            elif self.parent_method == "spinwheel":
-                parents = self.parent_spinwheel(self.population, 2)
-            else:
-                raise Exception("Invalid parent method")
-
-            # Recombination
-            if random.choices([True, False], weights=[self.recombination_probability, 1-self.recombination_probability], k=1)[0]:
-                print(f"Recombining parents => ", end=' ')
-
-                # Recombination occurs
-                child1, child2 = None, None
-                if self.recombination_method == "cutandfill":
-                    child1, child2 = self.crossover_cutandfill(parents[0], parents[1])
-                elif self.recombination_method == "pmx":
-                    child1, child2 = self.crossover_pmx(parents[0], parents[1])
+            for _ in range(self.pair_children_size):
+                if self.parent_method == "tournament":
+                    parents = self.parent_tournament(self.population, 5, 2)
+                elif self.parent_method == "spinwheel":
+                    parents = self.parent_spinwheel(self.population, 2)
                 else:
-                    raise Exception("Invalid recombinatio method")
+                    raise Exception("Invalid parent method")
 
-                children.append(child1)
-                children.append(child2)
+                # Recombination
+                if random.choices([True, False], weights=[self.recombination_probability, 1-self.recombination_probability], k=1)[0]:
+                    print(f"Recombining parents => ", end=' ')
 
-                print(f"Children from crossover: {[(i.dna, i.fitness) for i in children]}", end='\n', sep=',')
-            else:
-                children.append(parents[0])
-                children.append(parents[1])
-                print(f"Same as the parents: {[i.fitness for i in children]}" ,end='\n', sep=' ')
+                    # Recombination occurs
+                    child1, child2 = None, None
+                    if self.recombination_method == "cutandfill":
+                        child1, child2 = self.crossover_cutandfill(parents[0], parents[1])
+                    elif self.recombination_method == "pmx":
+                        child1, child2 = self.crossover_pmx(parents[0], parents[1])
+                    else:
+                        raise Exception("Invalid recombinatio method")
 
-            for indiv in children:
-                self.population.append(indiv)
-                if random.choices([True, False], weights=[self.mutation_probability, 1-self.mutation_probability], k=1)[0]:
+                    children.append(child1)
+                    children.append(child2)
 
-                    # Mutating
-                    dna_mutated = None
-                    if self.mutation_method == "single":
-                        dna_mutated = self.single_mutation(indiv)
-                    elif self.mutation_method == "double":
-                        dna_mutated = self.double_mutation(indiv)
-                    elif self.mutation_method == "singledouble":
-                        dna_mutated = self.double_mutation(indiv)
-                    elif self.mutation_method == "pertube":
-                        dna_mutated = self.pertube_mutation(indiv)
-                    elif self.mutation_method == "insertion":
-                        dna_mutated = self.insertion_mutation(indiv)
-                    else :
-                        raise Exception("Invalid mutation method")
+                    print(f"Children from crossover: {[(i.dna, i.fitness) for i in children]}", end='\n', sep=',')
+                else:
+                    children.append(parents[0])
+                    children.append(parents[1])
+                    print(f"Same as the parents: {[i.fitness for i in children]}" ,end='\n', sep=' ')
 
-                    indiv_mutated = self.new_indiv_func(self.dna_size, dna=dna_mutated)
-                    print("Mutaded: " + str((indiv_mutated.dna, indiv_mutated.fitness)))
-                    self.switch_indiv(indiv, indiv_mutated)
+                for indiv in children:
+                    self.population.append(indiv)
+                    if random.choices([True, False], weights=[self.mutation_probability, 1-self.mutation_probability], k=1)[0]:
+
+                        # Mutating
+                        dna_mutated = None
+                        if self.mutation_method == "single":
+                            dna_mutated = self.single_mutation(indiv)
+                        elif self.mutation_method == "double":
+                            dna_mutated = self.double_mutation(indiv)
+                        elif self.mutation_method == "singledouble":
+                            dna_mutated = self.double_mutation(indiv)
+                        elif self.mutation_method == "pertube":
+                            dna_mutated = self.pertube_mutation(indiv)
+                        elif self.mutation_method == "insertion":
+                            dna_mutated = self.insertion_mutation(indiv)
+                        else :
+                            raise Exception("Invalid mutation method")
+
+                        indiv_mutated = self.new_indiv_func(self.dna_size, dna=dna_mutated)
+                        print("Mutaded: " + str((indiv_mutated.dna, indiv_mutated.fitness)))
+                        self.switch_indiv(indiv, indiv_mutated)
 
             # Survivor selection
             if self.survivor_method == "best":
@@ -330,8 +332,8 @@ class Genetic:
         parents = []
 
         for _ in range(return_size):
-            # fitness_sum = sum([indiv.fitness for indiv in population])
-            fitnesses = [indiv.fitness for indiv in population]
+            fitness_sum = sum([indiv.fitness for indiv in population])
+            fitnesses = [indiv.fitness/fitness_sum for indiv in population]
 
             choice = random.choices(population, weights=fitnesses, k=1)[0]
 
