@@ -10,7 +10,7 @@ repositório para a cadeira de Tópicos avançados em IA. Com foco em algoritmos
 - [x] Mutação 1
 - [x] Mutação 2
 - [x] Sobrevivencia
-- [ ] Algoritmo
+- [x] Algoritmo
 
 ## Algoritmo
 begin
