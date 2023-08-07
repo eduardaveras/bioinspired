@@ -7,6 +7,7 @@ class Chromossome:
         self.function = Functions(function, dimensions)
         self.isSolution = False
         self.dimensions = dimensions
+        self.__fitness__ = None
 
         if X is None:
             self.X = self.random_chromossome()
@@ -62,11 +63,13 @@ class Chromossome:
         return X
 
     def fitness(self):
-        __fit__ = self.function(self.X)
+        if self.__fitness__ is None:
+            self.__fitness__ = self.function(self.X)
 
-        if __fit__ == .0:
+        if self.__fitness__ == .0:
             self.isSolution = True
-        return __fit__
+
+        return self.__fitness__
 
     def set_parents(self, parents):
         for p in parents:

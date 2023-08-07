@@ -4,11 +4,13 @@ from chromossome import Chromossome
 import numpy as np
 
 class Genetic:
-    def __init__(self, population_size=100, max_iterations=10000,
-                 pair_children_size=3, dimensions=30,
+    def __init__(self, population_size=1000, max_iterations=10000,
+                 pair_children_size=4, dimensions=30,
                  recombination_method="", recombination_probability=0.9,
-                 mutation_method="", mutation_probability=0.7,
+                 index_mutation_probability=0.5, index_mutation_rate=0.99998,
+                 mutation_method="gaussian", mutation_probability=0.1,
                  parent_method="tournament", survivor_method="best",
+                 max_gen=1000
                  ):
 
 
@@ -23,7 +25,10 @@ class Genetic:
         self.iteration_info = []
         self.recombination_probability = recombination_probability
         self.mutation_probability = mutation_probability
+        self.index_mutation_probability = index_mutation_probability
+        self.index_mutation_rate = index_mutation_rate
         self.pair_children_size = pair_children_size
+        self.max_gen = max_gen
         # Methods
         self.parent_method = parent_method
         self.survivor_method = survivor_method
@@ -54,8 +59,6 @@ class Genetic:
             parents = []
             print(f"\n{self.iterations} iteration ---------\n")
             #print(f"Population fitnesses: {[i.fitness() for i in self.population]}", end='\n', sep=',')
-            print(f"best fitness: {min([i.fitness() for i in self.population])}")
-
             # Selection of parents
             for _ in range(self.pair_children_size):
                 if self.parent_method == "tournament":
@@ -67,32 +70,38 @@ class Genetic:
 
                 # Recombination
                 if random.choices([True, False], weights=[self.recombination_probability, 1-self.recombination_probability], k=1)[0]:
-                    print(f"Recombining parents => ", end=' ')
+                    # print(f"Recombining parents => ", end=' ')
 
                     # Recombination occurs
                     child1, child2 = self.recombine_line(parents[0], parents[1])
                     children.append(child1)
                     children.append(child2)
 
-                    print(f"Children from crossover: {[(i.fitness()) for i in children]}", end='\n', sep=',')
+                    # print(f"Children from crossover: {[(i.fitness()) for i in children]}", end='\n', sep=',')
                 else:
                     children.append(parents[0])
                     children.append(parents[1])
-                    print(f"Same as the parents: {[i.fitness() for i in children]}" ,end='\n', sep=' ')
+                    # print(f"Same as the parents: {[i.fitness() for i in children]}" ,end='\n', sep=' ')
 
                 for indiv in children:
                     self.population.append(indiv)
-                    if random.choices([True, False], weights=[self.mutation_probability, 1-self.mutation_probability], k=1)[0]:
+                    if random.random() < self.mutation_probability:
                         # Mutating
-                        indiv_mutated = self.mutate_non_uniform(indiv, 5000)
+                        if self.mutation_method == "gaussian":
+                            indiv_mutated = self.mutate_gaussian(indiv)
+                        elif self.mutation_method == "non_uniform":
+                            indiv_mutated = self.mutate_non_uniform(indiv, self.max_gen)
+
                         # if(indiv_mutated.fitness() < indiv.fitness()):
                         self.switch_indiv(indiv, indiv_mutated)
 
             # Survivor selection
             self.choose_survivor(self.population_size)
-
+            self.reduce_index_mutation_probability(0.2)
             # # self.population = sorted(self.population, key=lambda indiv: indiv.fitness(), reverse=True)
             self.iteration_info.append([i.fitness() for i in self.population])
+
+            print(f"best fitness: {min([i.fitness() for i in self.population])}, : {self.index_mutation_probability}")
 
             print("---------------------------")
 
@@ -120,25 +129,57 @@ class Genetic:
 
         return False
 
+    def reduce_index_mutation_probability(self, min):
+        self.index_mutation_probability = self.index_mutation_probability * self.index_mutation_rate
+
+        if self.index_mutation_probability < min:
+            self.index_mutation_probability = min
+
     def recombine_line(self, parent1, parent2, alpha=0.5):
         child1 = parent1.copy()
         child2 = parent2.copy()
+
+        lower_bound, upper_bound = parent1.function.bounds
 
         for i in range(len(parent1.X)):
             I = alpha * (max(parent1.X[i], parent2.X[i]) - min(parent1.X[i], parent2.X[i]))
             child1.X[i] = random.uniform(min(parent1.X[i], parent2.X[i]) - I, max(parent1.X[i], parent2.X[i]) + I)
             child2.X[i] = random.uniform(min(parent1.X[i], parent2.X[i]) - I, max(parent1.X[i], parent2.X[i]) + I)
 
+            child1.X[i] = max(lower_bound, min(child1.X[i], upper_bound))
+            child2.X[i] = max(lower_bound, min(child2.X[i], upper_bound))
+
         return child1, child2
 
     def mutate_non_uniform(self, individual, max_gen, b=5):
         t = self.iterations / max_gen
-        index = random.randint(0, len(individual.X) - 1)
-        delta = (individual.function.bounds[1] - individual.function.bounds[0]) * (1 - np.random.rand()**(1 - t)**b)
-        if random.random() < 0.5:
-            individual.X[index] -= delta
-        else:
-            individual.X[index] += delta
+        fixed_index = random.randint(0, len(individual.X) - 1)
+
+        for index in range(len(individual.X)):
+            if random.random() < self.index_mutation_probability or index == fixed_index:
+                delta = (individual.function.bounds[1] - individual.function.bounds[0]) * (1 - np.random.rand()**(1 - t)**b)
+                if random.random() < 0.5:
+                    individual.X[index] -= delta
+                else:
+                    individual.X[index] += delta
+
+                # Assegurando que o valor mutado esteja dentro dos limites
+                individual.X[index] = np.clip(individual.X[index], individual.function.bounds[0], individual.function.bounds[1])
+
+        return individual
+
+    def mutate_gaussian(self, individual, sigma=0.01):
+
+        fixed_index = random.randint(0, len(individual.X) - 1)
+
+        for idx in range(len(individual.X)):
+            if np.random.rand() < self.index_mutation_probability or idx == fixed_index:
+                individual.X[idx] += np.random.normal(0, sigma)
+
+                # Verifique se o valor mutado está dentro dos limites e ajuste se necessário
+                lower_bound, upper_bound = individual.function.bounds
+                individual.X[idx] = max(lower_bound, min(individual.X[idx], upper_bound))
+
         return individual
 
     def init_population(self):
@@ -152,9 +193,9 @@ class Genetic:
         population = self.population
         list_parents = random.sample(population, choices_size)
         best_parents = sorted(list_parents, key=lambda indiv: indiv.fitness(), reverse=False)
-        print(f"Selecting parents: {[i.fitness() for i in best_parents]}", end='\n', sep=',')
+        # print(f"Selecting parents: {[i.fitness() for i in best_parents]}", end='\n', sep=',')
         # Best parents:
-        print(f"Chosen parents: {[i.fitness() for i in best_parents][:return_size]}", end='\n', sep=',')
+        # print(f"Chosen parents: {[i.fitness() for i in best_parents][:return_size]}", end='\n', sep=',')
 
         return best_parents[:return_size]
 
@@ -177,12 +218,10 @@ class Genetic:
         bests = sorted(self.population, key=lambda indiv: indiv.fitness(), reverse=False)
 
         for _ in range(len(self.population) - return_size):
-            print("Removing worst: " + str(bests[-1].fitness()))
+            # print("Removing worst: " + str(bests[-1].fitness()))
             self.population.remove(bests[-1])
             bests.remove(bests[-1])
 
-g = Genetic()
-# g.run()
-g.population = g.init_population()
-g.run()
-
+if __name__ == "__main__":
+    g = Genetic()
+    g.run()
