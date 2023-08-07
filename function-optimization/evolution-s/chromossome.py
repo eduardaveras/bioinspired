@@ -2,15 +2,19 @@ import numpy as np
 from functions import Functions
 
 class Chromossome:
-    def __init__(self, dimensions=30, mutation_step=None, X=None, global_learning_rate=1, learning_rate=1, epsilon=0.01, function_name="ackley"):
-        self.dimensions = dimensions
-        self.learning_rate = (1 / np.sqrt(2 * np.sqrt(dimensions))) * learning_rate
-        self.global_learning_rate = (1 / np.sqrt(2 * dimensions)) * global_learning_rate
-        self.epsilon = epsilon
-        self.function = Functions(function_name, dimensions)
+    def __init__(self, Evolution, mutation_step=None, X=None):
+        self.Evolution = Evolution
+        self.dimensions = Evolution.dimensions
+        self.epsilon = Evolution.epsilon
+
+        self.learning_rate = (1 / np.sqrt(2 * np.sqrt(self.dimensions))) * Evolution.learning_rate
+        self.global_learning_rate = (1 / np.sqrt(2 * self.dimensions)) * Evolution.global_learning_rate
+        self.function = Functions(Evolution.function, self.dimensions)
 
         self.X = X
         self.mutation_step = mutation_step
+        self.parents = []
+        self.isSolution = False
 
         if X is None:
             self.X, self.mutation_step = self.random_chromossome()
@@ -20,9 +24,49 @@ class Chromossome:
 
     def __getitem__(self, index):
         if isinstance(index, int) and index < self.dimensions and index >= 0:
-            return self.X[index], self.mutation_step[index]
+            return np.array([self.X[index], self.mutation_step[index]])
         else:
             raise Exception("Index out of bounds")
+
+    def __setitem__(self, index, value):
+        if isinstance(index, int) and index < self.dimensions and index >= 0:
+            self.X[index] = value[0]
+            self.mutation_step[index] = value[1]
+        else:
+            raise Exception("Index out of bounds")
+
+    def __lt__(self, other):
+        return self.fitness() < other.fitness()
+
+    def __le__(self, other):
+        return self.fitness() <= other.fitness()
+
+    def __gt__(self, other):
+        return self.fitness() > other.fitness()
+
+    def __ge__(self, other):
+        return self.fitness() >= other.fitness()
+
+    def __eq__(self, other):
+        return self.fitness() == other.fitness()
+
+    def __ne__(self, other):
+        return self.fitness() != other.fitness()
+
+    def copy(self):
+        return Chromossome(self.Evolution, self.mutation_step.copy(), self.X.copy())
+
+    def __add__(self, other):
+        X = self.X + other.X
+        mutation_step = self.mutation_step + other.mutation_step
+
+        return Chromossome(self.Evolution, mutation_step, X)
+
+    def __truediv__(self, other):
+        X = self.X / other
+        mutation_step = self.mutation_step / other
+
+        return Chromossome(self.Evolution, mutation_step, X)
 
     def random_chromossome(self):
         X = np.random.uniform(self.function.bounds[0], self.function.bounds[1], self.dimensions)
@@ -44,4 +88,12 @@ class Chromossome:
                 self.X[i] = self.function.bounds[1]
 
     def fitness(self):
-        return self.function(self.X)
+        __fit__ = self.function(self.X)
+
+        if __fit__ == .0:
+            self.isSolution = True
+        return __fit__
+
+    def set_parents(self, parents):
+        for p in parents:
+            self.parents.append(p)

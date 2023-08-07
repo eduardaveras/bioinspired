@@ -1,4 +1,5 @@
 import numpy as np
+import random as rd
 from chromossome import Chromossome
 
 # Evolution for solving any function for 30 dimensions
@@ -6,7 +7,7 @@ from chromossome import Chromossome
 # tau_prime = global learning rate
 
 class Evolution:
-    def __init__(self, population_size=1000, dimensions=30,
+    def __init__(self, n_iterations=100, population_size=10, dimensions=30,
                  function="ackley", crossover_rate=0.2, mutation_rate=0.2,
                  learning_rate=1, global_learning_rate=1, epsilon=0.01):
 
@@ -26,34 +27,35 @@ class Evolution:
         self.best_fitness_history = None
         self.best_individual_history = None
 
+        self.n_iterations = 100
+
         self.population = self.init_population()
 
     def init_population(self):
         population = []
 
         for _ in range(self.population_size):
-            new_chromossome = Chromossome(dimensions=self.dimensions, global_learning_rate=self.global_learning_rate,
-                                            learning_rate=self.learning_rate, epsilon=self.epsilon, function_name=self.function)
+            new_chromossome = Chromossome(self)
             population.append(new_chromossome)
 
         return population
 
+    def intermediate_recombination(self, parent1, parent2):
+        return (parent1 + parent2) / 2
 
-    # We evaluate the fitness of each individual
-    def evaluate_fitness(self):
-        for i in range(self.population_size):
-            self.fitness[i] = self.function(self.population[i])
-
+    def intermediate_index_recombination(self, index, parent1, parent2):
+        return (parent1[index] + parent2[index]) / 2
 
     # We recombine the population with a discrete crossover or intermediate crossover
     def discrete_crossover(self, parent1, parent2):
-        child = np.zeros(self.dimensions)
+        child = Chromossome(self, np.zeros(self.dimensions), np.zeros(self.dimensions))
         for i in range(self.dimensions):
             if np.random.uniform(0, 1) < 0.5:
                 child[i] = parent1[i]
             else:
                 child[i] = parent2[i]
 
+        child.set_parents([parent1, parent2])
         return child
 
     def intermediate_crossover(self, parent1, parent2):
@@ -61,28 +63,26 @@ class Evolution:
         for i in range(self.dimensions):
             child[i] = (parent1[i] + parent2[i]) / 2
 
+        child.set_parents([parent1, parent2])
         return child
 
-    # We select the parents with a uniform distribution
+    # We select the parents according to a uniform distribution of probabilities
     def select_parents(self):
-        parent1 = np.random.randint(0, self.population_size)
-        parent2 = np.random.randint(0, self.population_size)
-
-        return parent1, parent2
+        return rd.choices(self.population, k=2)
 
     # We select the survivor wth (μ + λ) selection
-    def select_survivor_plus(self, parent, child, size):
-        total_population = np.concatenate((parent, child))
-        total_population.sort(key=lambda ind: self.fitness[ind])
+    def filter_survivors_plus(self, parents, children, size):
+        p = parents + children
+        p_sorted = p.sort(reverse=True)
+        remove_size = len(p_sorted) - size
 
-        return total_population[:size]
+        for _ in range(remove_size):
+            p.remove(p_sorted.pop())
 
-    # We select the survivor with (μ, λ) selection
-    def select_survivor_comma(self, child, size):
-        child.sort(key=lambda ind: self.fitness[ind])
+        return p
 
-        return child[:size]
-
-
-
+    # We select the survivor wth (μ , λ) selection
+    def filter_survivors_comma(self, parents, children, size):
+       pass 
+   # Duvida aqui???
 
