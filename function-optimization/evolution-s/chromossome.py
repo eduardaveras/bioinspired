@@ -6,14 +6,15 @@ class Chromossome:
         self.Evolution = Evolution
         self.dimensions = Evolution.dimensions
         self.epsilon = Evolution.epsilon
+        self.jump_chance = Evolution.jump_chance
 
         self.learning_rate = (1 / np.sqrt(2 * np.sqrt(self.dimensions))) * Evolution.learning_rate
         self.global_learning_rate = (1 / np.sqrt(2 * self.dimensions)) * Evolution.global_learning_rate
         self.function = Functions(Evolution.function, self.dimensions)
 
         self.X = X
+        self.__fit__ = None
         self.mutation_step = mutation_step
-        self.parents = []
         self.isSolution = False
 
         if X is None:
@@ -74,9 +75,17 @@ class Chromossome:
         return X, mutation_step
 
     def mutate(self):
+        N_global = np.random.normal(0, 1)
+        random_step_jump = 1
+
+        if np.random.uniform(0,1) < self.jump_chance:
+            print("Jumped!")
+            random_step_jump = np.random.uniform(1, 6)
+
         for i in range(self.dimensions):
-            self.mutation_step[i] = self.mutation_step[i] * np.exp(self.global_learning_rate * np.random.normal(0, 1) + self.learning_rate * np.random.normal(0, 1))
-            self.X[i] = self.X[i] + self.mutation_step[i] * np.random.normal(0, 1)
+            N_i = np.random.normal(0, 1)
+            self.mutation_step[i] = self.mutation_step[i] * np.exp(self.global_learning_rate * N_global + self.learning_rate * N_i) * random_step_jump
+            self.X[i] = self.X[i] + self.mutation_step[i] * N_i
 
             # Check bounds
             if self.mutation_step[i] < self.epsilon:
@@ -88,12 +97,10 @@ class Chromossome:
                 self.X[i] = self.function.bounds[1]
 
     def fitness(self):
-        __fit__ = self.function(self.X)
+        if self.__fit__ is None:
+            self.__fit__ = self.function(self.X)
 
-        if __fit__ == .0:
+        if self.__fit__ == .0:
             self.isSolution = True
-        return __fit__
 
-    def set_parents(self, parents):
-        for p in parents:
-            self.parents.append(p)
+        return self.__fit__
