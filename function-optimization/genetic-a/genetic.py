@@ -6,7 +6,7 @@ import numpy as np
 class Genetic:
     def __init__(self, population_size=1000, max_iterations=10000,
                  pair_children_size=4, dimensions=30,
-                 recombination_method="", recombination_probability=0.9,
+                 recombination_probability=0.9,
                  index_mutation_probability=0.5, index_mutation_rate=0.99998,
                  mutation_method="gaussian", mutation_probability=0.1,
                  parent_method="tournament", survivor_method="best",
@@ -32,7 +32,6 @@ class Genetic:
         # Methods
         self.parent_method = parent_method
         self.survivor_method = survivor_method
-        self.recombination_method = recombination_method
         self.mutation_method = mutation_method
 
     def run(self):

@@ -5,8 +5,8 @@ from IPython.display import clear_output, display
 __FILENAME = "teste"
 DEFAULT_ARGS = { "population_size": 2000, "max_iterations": 10000,
                  "pair_children_size": 6, "dimensions": 30,
-                 "recombination_method": "", "recombination_probability": 0.9,
-                 "mutation_method": "", "mutation_probability": 0.7,
+                 "recombination_probability": 0.9,
+                 "mutation_method": "gaussian", "mutation_probability": 0.7,
                  "parent_method": "tournament", "survivor_method": "best",
                  "max_gen": 2000, "index_mutation_probability": 0.3}
 
