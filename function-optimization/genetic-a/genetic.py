@@ -10,7 +10,7 @@ class Genetic:
                  index_mutation_probability=0.5, index_mutation_rate=0.99998,
                  mutation_method="gaussian", mutation_probability=0.1,
                  parent_method="tournament", survivor_method="best",
-                 max_gen=1000
+                 max_gen=1000, function_name="ackley"
                  ):
 
 
@@ -30,6 +30,7 @@ class Genetic:
         self.pair_children_size = pair_children_size
         self.max_gen = max_gen
         # Methods
+        self.function_name = function_name
         self.parent_method = parent_method
         self.survivor_method = survivor_method
         self.mutation_method = mutation_method
@@ -187,7 +188,7 @@ class Genetic:
     def init_population(self):
         population = []
         for i in range(self.population_size):
-            population.append(Chromossome(dimensions=self.dimensions))
+            population.append(Chromossome(dimensions=self.dimensions, function=self.function_name))
 
         return population
 
