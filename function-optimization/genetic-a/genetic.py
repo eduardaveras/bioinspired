@@ -92,6 +92,8 @@ class Genetic:
                             indiv_mutated = self.mutate_gaussian(indiv)
                         elif self.mutation_method == "non_uniform":
                             indiv_mutated = self.mutate_non_uniform(indiv, self.max_gen)
+                        else:
+                            raise Exception("Invalid mutation method")
 
                         # if(indiv_mutated.fitness() < indiv.fitness()):
                         self.switch_indiv(indiv, indiv_mutated)
