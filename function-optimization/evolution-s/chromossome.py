@@ -79,8 +79,8 @@ class Chromossome:
         random_step_jump = 1
 
         if np.random.uniform(0,1) < self.jump_chance:
-            print("Jumped!")
-            random_step_jump = np.random.uniform(1, 6)
+            # print("Jumped!")
+            random_step_jump = np.random.uniform(1, 10)
 
         for i in range(self.dimensions):
             N_i = np.random.normal(0, 1)

@@ -9,11 +9,12 @@ from utils import calculate_time
 # tau_prime = global learning rate
 
 class Evolution:
-    def __init__(self, n_iterations=200000, population_size=200,
-                 dimensions=30, number_of_parents=200,
+    def __init__(self, n_iterations=200000, population_size=50,
+                 dimensions=30, number_of_parents=50,
                  function="rosenbrock", crossover_rate=1,
-                 learning_rate=2, global_learning_rate=2, epsilon=0.01,
-                 crossover="intermediate", survivors_selection="plus", parents_selection="best"
+                 learning_rate=2.1, global_learning_rate=2.1, epsilon=0.01,
+                 selection_pressure=7,
+                 crossover="intermediate", survivors_selection="plus", parents_selection="random"
                 ):
 
         self.dimensions = dimensions
@@ -35,7 +36,8 @@ class Evolution:
         self.crossover = crossover
         self.survivors_selection = survivors_selection
         self.parents_selection = parents_selection
-        self.jump_chance = 0.0001
+        self.selection_pressure = selection_pressure
+        self.jump_chance = 0.01
 
         self.population = []
         self.population_per_it = []
@@ -138,7 +140,7 @@ class Evolution:
             else:
                 raise Exception("Invalid parents selection type")
 
-            while (len(children)/len(parents) < 7):
+            while (len(children)/len(parents) < self.selection_pressure):
                 # Seleciona os pais em pares para gerar os filhos
                 parents_pair = self.select_parents_in_pair(parents)
 

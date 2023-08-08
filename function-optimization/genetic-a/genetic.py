@@ -86,6 +86,7 @@ class Genetic:
                 for indiv in children:
                     self.population.append(indiv)
                     if random.random() < self.mutation_probability:
+                        indiv_mutated = None
                         # Mutating
                         if self.mutation_method == "gaussian":
                             indiv_mutated = self.mutate_gaussian(indiv)
