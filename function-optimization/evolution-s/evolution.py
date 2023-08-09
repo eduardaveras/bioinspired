@@ -2,7 +2,6 @@ import time
 import numpy as np
 import random as rd
 from chromossome import Chromossome
-from utils import calculate_time
 
 # Evolution for solving any function for 30 dimensions
 # tau = learning rate
@@ -26,8 +25,8 @@ class Evolution:
 
         self.best_fitness = None
         self.best_individual = None
-        self.best_fitness_history = None
-        self.best_individual_history = None
+        self.best_fitness_history = []
+        self.solution_was_found = False
 
         self.population_size = population_size
         self.number_of_parents = number_of_parents
@@ -40,7 +39,7 @@ class Evolution:
         self.jump_chance = 0.01
 
         self.population = []
-        self.population_per_it = []
+        self.iteration_info = []
         self.iterations = 0
 
     def init_population(self):
@@ -105,6 +104,7 @@ class Evolution:
 
     def end_condition(self):
         if sum(1 for x in self.population if x.isSolution) > 0:
+            self.solution_was_found = True
             return False
 
         if self.iterations >= self.n_iterations or self.n_iterations == -1:
@@ -115,12 +115,12 @@ class Evolution:
     def run(self):
         # Initialize
         self.population = self.init_population()
-        self.population_per_it = []
         self.iterations = 0
 
         # criterio de parada
         while( self.end_condition() ):
             best_fitness = min([x.fitness() for x in self.population])
+            self.best_fitness_history.append(best_fitness)
             best_individual = min(self.population , key=lambda x: x.fitness())
             print("Iteration: ", self.iterations)
             print("Best fitness: ", best_fitness)
@@ -128,9 +128,14 @@ class Evolution:
             parents = []
             children = []
 
-            self.population_per_it.append(self.population)
             self.iterations += 1
             # number_of_children / number_of_parents <= 7
+
+            # before_parents_selection = self.parents_selection
+            # if self.best_fitness_history.count(self.best_fitness_history[-1]) == 50:
+            #         print("Changing!")
+            #         self.survivors_selection = "comma"
+            #         self.parents_selection = "random"
 
             # Seleção de pais
             if self.parents_selection == "best":
@@ -166,8 +171,15 @@ class Evolution:
                 self.population = self.filter_survivors_comma(parents, children, self.population_size)
             elif self.survivors_selection == "plus":
                 self.population = self.filter_survivors_plus(parents, children, self.population_size)
+            elif self.survivors_selection == "plus_comma":
+                if best_individual.fitness() < 2.0:
+                    self.population = self.filter_survivors_plus(parents, children, self.population_size) + [best_individual]
+                else:
+                    self.population = self.filter_survivors_comma(parents, children, self.population_size) + [best_individual]
             else:
                 raise Exception("Invalid survivors selection type")
+
+            self.iteration_info.append([i.fitness() for i in self.population])
 
 
 def main():

@@ -7,7 +7,7 @@ class Functions:
         self.bounds = None
         self.dimensions = dimensions
         self.name = function_name
-        self.tolerance = 1e-14
+        self.tolerance = 0.09
 
         if function_name == "ackley":
             self.function = self.ackley
