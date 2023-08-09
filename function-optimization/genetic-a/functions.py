@@ -7,7 +7,7 @@ class Functions:
         self.bounds = None
         self.dimensions = dimensions
         self.name = function_name
-        # self.tolerance = 1e-16
+        self.tolerance = 0.09
 
         if function_name == "ackley":
             self.function = self.ackley
@@ -36,8 +36,8 @@ class Functions:
         value = -20.0 * np.exp(-0.2 * np.sqrt(1 / d * np.sum(X ** 2))) - np.exp(
             1 / d * np.sum(np.cos(2 * np.pi * X))) + 20 + np.exp(1)
 
-        return value
-        # return value if abs(value) > self.tolerance else 0.0
+        #return value
+        return value if abs(value) > self.tolerance else 0.0
 
     def rastrigin(self, X):
         # X: 1D array of length d

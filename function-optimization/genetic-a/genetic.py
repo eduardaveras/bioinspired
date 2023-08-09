@@ -4,7 +4,7 @@ from chromossome import Chromossome
 import numpy as np
 
 class Genetic:
-    def __init__(self, population_size=1000, max_iterations=10000,
+    def __init__(self, population_size=100, max_iterations=10000,
                  pair_children_size=4, dimensions=30,
                  recombination_probability=0.9,
                  index_mutation_probability=0.5, index_mutation_rate=0.99998,

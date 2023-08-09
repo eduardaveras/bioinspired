@@ -8,7 +8,7 @@ DEFAULT_ARGS = { "population_size": 2000, "max_iterations": 10000,
                  "recombination_probability": 0.9,
                  "mutation_method": "gaussian", "mutation_probability": 0.7,
                  "parent_method": "tournament", "survivor_method": "best",
-                 "max_gen": 2000, "index_mutation_probability": 0.3}
+                 "max_gen": 2000, "index_mutation_probability": 0.3, "function_name": "ackley"}
 
 # ---------------------------------
 
@@ -32,7 +32,7 @@ def run_(args, filename=__FILENAME, n_runs=30):
         start = time.time()
 
         # Alg running
-        # outputPrint(filename)
+        outputPrint(filename)
         alg = g.Genetic(**args)
         alg.run()
 
