@@ -46,7 +46,7 @@ ROSENBROCK_ARGS = {
     'crossover': 'intermediate',
     'survivors_selection': 'plus_comma',
     'parents_selection': 'best',
-    "epsilon": 0.01
+    "epsilon": 0.0001
 }
 
 SCHWEFEL_ARGS = {
@@ -61,7 +61,7 @@ SCHWEFEL_ARGS = {
     'crossover': 'discrete',
     'survivors_selection': 'plus',
     'parents_selection': 'best',
-    "epsilon": 0.01,
+    "epsilon": 0.001,
 }
 
 # ---------------------------------
@@ -150,7 +150,7 @@ def run_(args, filename=__FILENAME, n_runs=3):
     display(str(found_solution) + " solutions of " + str(n_runs) +  " were found in " + str(round(sum(runs_times),2)) + " seconds")
 
 if __name__ == "__main__":
-    run_(RASTRIGIN_ARGS, filename="rastrigin_es")
-    run_(ROSENBROCK_ARGS, filename="rosenbrock_es")
+    # run_(RASTRIGIN_ARGS, filename="rastrigin_es")
+    # run_(ROSENBROCK_ARGS, filename="rosenbrock_es")
     run_(SCHWEFEL_ARGS, filename="schwefel_es")
 
