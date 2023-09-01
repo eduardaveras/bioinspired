@@ -3,56 +3,66 @@ from utils import *
 from IPython.display import clear_output, display
 
 __FILENAME = "teste"
-ACKLEY_ARGS = { "n_iterations":1500, "population_size":300,
-                 "dimensions":30, "number_of_parents":300,
-                 "function": "ackley", "crossover_rate": 1,
-                 "learning_rate": 1.1, "global_learning_rate": 1.1, "epsilon": 0.01,
-                 "selection_pressure": 7,
-                 "crossover":"discrete", "survivors_selection": "plus",
-                 "parents_selection":"best"
-              }
+ACKLEY_ARGS = { 
+    "n_iterations":400,
+    "population_size":300,
+    "dimensions":30,
+    "number_of_parents":300,
+    "function": "ackley",
+    "crossover_rate": 1,
+    "learning_rate": 1.1,
+    "global_learning_rate": 1.1,
+    "epsilon": 0.01,
+    "selection_pressure": 7,
+    "crossover":"discrete",
+    "survivors_selection": "plus",
+    "parents_selection":"best"
+}
 
 RASTRIGIN_ARGS = {
-    "n_iterations": 3000,
-    "population_size": 300,
-    "dimensions": 30,
-    "number_of_parents": 300,
-    "function": "rastrigin",
-    "crossover_rate": 0.8,
-    "learning_rate": 0.88,
-    "global_learning_rate": 1.77,
-    "epsilon": 0.01,
-    "selection_pressure": 7,
-    "crossover": "discrete",
-    "survivors_selection": "plus_comma",
-    "parents_selection": "best"
+    'n_iterations': 400,
+    'population_size': 400,
+    'dimensions': 30,
+    'number_of_parents': 300,
+    'function': 'rastrigin',
+    'learning_rate': 1.0,
+    'global_learning_rate': 2.0,
+    'selection_pressure': 5,
+    'crossover': 'discrete',
+    'survivors_selection': 'plus_comma',
+    'parents_selection': 'best',
+    "epsilon": 0.001,
 }
-
 
 ROSENBROCK_ARGS = {
-    "n_iterations": 4000,
-    "population_size": 400,
-    "dimensions": 30,
-    "number_of_parents": 60,
-    "function": "rosenbrock",
-    "crossover_rate": 0.85,
-    "learning_rate": 1.8,
-    "global_learning_rate": 3.1,
-    "epsilon": 0.01,
-    "selection_pressure": 7,
-    "crossover": "intermediate",
-    "survivors_selection": "plus",
-    "parents_selection": "best"
+    'n_iterations': 400,
+    'population_size': 400,
+    'dimensions': 30,
+    'number_of_parents': 200,
+    'function': 'rosenbrock',
+    'learning_rate': 2.0,
+    'global_learning_rate': 3.0,
+    'selection_pressure': 5,
+    'crossover': 'intermediate',
+    'survivors_selection': 'plus_comma',
+    'parents_selection': 'best',
+    "epsilon": 0.0001
 }
 
-SCHWEFEL_ARGS = { "n_iterations":1500, "population_size":200,
-                "dimensions":30, "number_of_parents":30,
-                "function": "schwefel", "crossover_rate": 1,
-                "learning_rate": 1.1, "global_learning_rate": 1.1, "epsilon": 0.01,
-                "selection_pressure": 7,
-                "crossover":"discrete", "survivors_selection": "plus",
-                "parents_selection":"best"
-                }
+SCHWEFEL_ARGS = {
+    'n_iterations': 400,
+    'population_size': 400,
+    'dimensions': 30,
+    'number_of_parents': 100,
+    'function': 'schwefel',
+    'learning_rate': 1.0,
+    'global_learning_rate': 1.0,
+    'selection_pressure': 5,
+    'crossover': 'discrete',
+    'survivors_selection': 'plus',
+    'parents_selection': 'best',
+    "epsilon": 0.001,
+}
 
 # ---------------------------------
 
@@ -77,18 +87,18 @@ def run_(args, filename=__FILENAME, n_runs=3):
 
         # Alg running
         # outputPrint(filename)
-        alg = e.Evolution(**args)
-        alg.run()
+        solution_found = False
 
-        it = alg.iterations
-        if it == 0:
+        alg = None
+
+        while(not solution_found):
+            alg = e.Evolution(**args)
             alg.run()
-            it = alg.iterations
-        if it == 0:
-            alg.run()
-            it = alg.iterations
-        if it == 0:
-            alg.run()
+
+            solution_found = alg.solution_was_found
+
+        print("Found!")
+
 
         enablePrint()
 
@@ -140,4 +150,7 @@ def run_(args, filename=__FILENAME, n_runs=3):
     display(str(found_solution) + " solutions of " + str(n_runs) +  " were found in " + str(round(sum(runs_times),2)) + " seconds")
 
 if __name__ == "__main__":
-    run_(RASTRIGIN_ARGS)
+    # run_(RASTRIGIN_ARGS, filename="rastrigin_es")
+    # run_(ROSENBROCK_ARGS, filename="rosenbrock_es")
+    run_(SCHWEFEL_ARGS, filename="schwefel_es")
+
