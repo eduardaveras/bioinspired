@@ -60,7 +60,7 @@ class Cube:
 
         return cube
 
-    def image(self, size, stroke_width):
+    def image(self, size=1):
         image = np.zeros((size * 3, size * 3, 3), np.uint8)
         for i in range(3):
             for j in range(3):
@@ -75,12 +75,5 @@ class Cube:
                 image[i * size:(i + 1) * size, (j + 1) * size : (j + 1) * size] = (255, 255, 255)  # Direita
                 image[i * size:i * size, j * size:(j + 1) * size] = (255, 255, 255)  # Topo
                 image[(i + 1) * size :(i + 1) * size, j * size:(j + 1) * size] = (255, 255, 255)  # Fundo
-
-                # Add a grid
-                if stroke_width != 0:
-                    image[i * size:(i + 1) * size, j * size:j * size + stroke_width] = (255, 255, 255)  # Esquerda
-                    image[i * size:(i + 1) * size, (j + 1) * size - stroke_width:(j + 1) * size] = (255, 255, 255)  # Direita
-                    image[i * size:i * size + stroke_width, j * size:(j + 1) * size] = (255, 255, 255)  # Topo
-                    image[(i + 1) * size - stroke_width:(i + 1) * size, j * size:(j + 1) * size] = (255, 255, 255)  # Fundo
 
         return image

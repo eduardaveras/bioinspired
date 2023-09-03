@@ -1,5 +1,6 @@
 import numpy as np
 import time
+from cube import Cube
 
 class Rand:
     def __init__(self, __min__, __max__, size):
@@ -24,7 +25,7 @@ class Rand:
 
 class Rand_cube:
     def __init__(self, size):
-        self.values = []
+        self.cubes = []
         self.size = size
         self.seed = int(time.time())
 
@@ -36,11 +37,12 @@ class Rand_cube:
         for _ in range(self.size):
 
             value = np.random.randint(0, 6, (3, 3))
+            cube = Cube(value)
 
-            self.values.append(value)
+            self.cubes.append(cube)
 
     def pop(self):
-        if len(self.values) == 0:
+        if len(self.cubes) == 0:
             self.generate()
 
-        return self.values.pop(0)
+        return self.cubes.pop(0)

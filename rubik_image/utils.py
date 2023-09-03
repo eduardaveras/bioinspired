@@ -5,6 +5,8 @@ import time
 # Carrega a imagem a partir de um path
 def load_image(path):
     image = cv2.imread(path)
+    # Cut to a square
+    image = image[:max(image.shape), :max(image.shape)]
     # Convert to hsv
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     return image
@@ -24,7 +26,7 @@ def equalize_image(image, alpha=1.5, beta=30):
 
 
 # Retorna os tons de cinza da imagem em um array size//cube_size x size//cube_size
-def image_to_gray_pixels(image, size, cube_size, alpha=1.5, beta=30):
+def image_to_gray_pixels(image, size, pixel_size, alpha=1.5, beta=30):
     # Processo de filtragem da imagem
     image = cv2.resize(image, (size, size))
     image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -32,45 +34,60 @@ def image_to_gray_pixels(image, size, cube_size, alpha=1.5, beta=30):
 
     grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    image_gray = np.zeros((size//cube_size, size//cube_size), dtype=np.uint8)
+    image_gray = np.zeros((size//pixel_size, size//pixel_size), dtype=np.uint8)
 
-    for i in range(0, size, cube_size):
-        for j in range(0, size, cube_size):
-            cube = grayscale[i:i+cube_size, j:j+cube_size]
+    for i in range(0, size, pixel_size):
+        for j in range(0, size, pixel_size):
+            cube = grayscale[i:i+pixel_size, j:j+pixel_size]
             # Calcula a luminância média do cubo
             mean_luminance = np.mean(cube)
             # Atribui aquele cubo da imagem a essa luminância média
-            image_gray[i//cube_size, j//cube_size] = mean_luminance
+            image_gray[i//pixel_size, j//pixel_size] = mean_luminance
 
     return image_gray
 
 
 # Da imagem retorna os cubos (3x3) em um array
-# Isso deve ser feito depois da imagem ser pixelada
-def image_cubes(image):
+# Isso deve ser feito depois da imagem ser pixelada em tons de cinza
+def gray_image_to_cubes(image):
+    if image.shape[0] % 3:
+        raise ValueError("Image size must be divisible by 3")
+
     cubes = []
+
     for i in range(0, image.shape[0], 3):
+        row_cubes = []
         for j in range(0, image.shape[1], 3):
             cube = image[i:i+3, j:j+3]
-            cubes.append(cube)
+            row_cubes.append(cube)
+        cubes.append(row_cubes)
 
-    return cubes
+    return np.array(cubes)
+
+def cubes_to_image(cubes, stroke_width=0, size_times=1, stroke_color=255):
+    image = np.zeros((cubes.shape[0]*3*size_times, cubes.shape[1]*3*size_times), dtype=np.uint8)
+
+    for i in range(0, image.shape[0], 3*size_times):
+        for j in range(0, image.shape[1], 3*size_times):
+            cube = cubes[i//(3*size_times), j//(3*size_times)]
+            cube_times = np.kron(cube, np.ones((size_times, size_times), dtype=np.uint8))
+
+            # Border in cube_times
+            if stroke_width > 0:
+                cube_times[0:stroke_width, :] = stroke_color
+                cube_times[-stroke_width:, :] = stroke_color
+                cube_times[:, 0:stroke_width] = stroke_color
+                cube_times[:, -stroke_width:] = stroke_color
+
+
+            image[i:i+3*size_times, j:j+3*size_times] = cube_times
+            # image[i_:i_+3*size_times, j_:j_+3*size_times] = cube_times
+
+    return image
 
 # Retorna a imagem pixelada em tamanho size x size
 def resize_pixeled(image, size):
-    return cv2.resize(image, (image.shape[1], image.shape[0]), interpolation=cv2.INTER_AREA)
-
-# Junto os cubos e retorna a imagem
-def cubes_to_image(cubes, size, cube_size):
-    reconstructed_image = np.zeros((size, size, 3), dtype=np.uint8)
-
-    cube_idx = 0
-    for i in range(0, size, cube_size):
-        for j in range(0, size, cube_size):
-            reconstructed_image[i:i+cube_size, j:j+cube_size] = cubes[cube_idx]
-            cube_idx += 1
-
-    return reconstructed_image
+    return cv2.resize(image, (size, size), interpolation=cv2.INTER_AREA)
 
 # Para mostrar a imagem no jupyter!
 from PIL import Image
