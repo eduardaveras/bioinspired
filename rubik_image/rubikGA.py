@@ -40,17 +40,16 @@ class Individual:
 
         if cubes == None:
             self.random_init()
+
         elif type(cubes) is not np.ndarray:
             raise TypeError("cubes initializer must be a numpy array")
 
-        self.evaluate_fitness()
+        self.evaluate_fitness(ga_instance.target_cubes)
 
-    def evaluate_fitness(self):
-        # Compara Individual.cubes com GA.target_cubes
-        # para cada cubo tira a diferença de luminancia
-        # soma todas as diferenças
-
-        pass
+    def evaluate_fitness(self, target_cubes):
+        for i in range(0, self.n_cubes_x):
+            for j in range(0, self.n_cubes_x):
+                self.fitness += np.sum(np.abs(self.cubes[i][j].gray_map - target_cubes[i][j]))
 
     def random_init(self):
         # Create an np.array of random cubes with the type Cube
@@ -92,27 +91,3 @@ class Individual:
                 image[start_row:end_row, start_col:end_col, :] = cube_times
 
         return image
-    # def to_image(self, size_times=1, stroke_width=0, stroke_color=255):
-    #     cubes = self.cubes
-    #     # Create an image from the cubes
-    #     # and return it
-    #     image = np.zeros((cubes.shape[0]*3*size_times, cubes.shape[1]*3*size_times), dtype=np.uint8)
-
-
-    #     for i in range(0, image.shape[0], 3*size_times):
-    #         for j in range(0, image.shape[1], 3*size_times):
-    #             cube = cubes[i//(3*size_times), j//(3*size_times)]
-    #             cube_times = np.kron(cube.image(), np.ones((size_times, size_times), dtype=np.uint8))
-
-    #             # Border in cube_times
-    #             if stroke_width > 0:
-    #                 cube_times[0:stroke_width, :] = stroke_color
-    #                 cube_times[-stroke_width:, :] = stroke_color
-    #                 cube_times[:, 0:stroke_width] = stroke_color
-    #                 cube_times[:, -stroke_width:] = stroke_color
-
-
-    #         image[i:i+3*size_times, j:j+3*size_times] = cube_times
-    #         # image[i_:i_+3*size_times, j_:j_+3*size_times] = cube_times
-
-    #     return image

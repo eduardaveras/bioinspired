@@ -44,6 +44,7 @@ def image_to_gray_pixels(image, size, pixel_size, alpha=1.5, beta=30):
             # Atribui aquele cubo da imagem a essa luminância média
             image_gray[i//pixel_size, j//pixel_size] = mean_luminance
 
+
     return image_gray
 
 
