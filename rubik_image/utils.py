@@ -90,6 +90,11 @@ def cubes_to_image(cubes, stroke_width=0, size_times=1, stroke_color=255):
 def resize_pixeled(image, size):
     return cv2.resize(image, (size, size), interpolation=cv2.INTER_AREA)
 
+# Coloca a imagem e um arquivo
+def save_image(image, path):
+    image_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    cv2.imwrite(path, image_hsv)
+
 # Para mostrar a imagem no jupyter!
 from PIL import Image
 from IPython.display import display

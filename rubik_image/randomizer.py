@@ -13,9 +13,10 @@ class Rand:
         self.generate()
 
     def generate(self):
-        # Generate a list of random numbers
         np.random.seed(self.seed)
-        self.values = np.random.randint(self.min, self.max, self.size)
+        for _ in range(self.size):
+            value = np.random.randint(self.min, self.max)
+            self.values.append(value)
 
     def pop (self):
         if len(self.values) == 0:
@@ -33,12 +34,9 @@ class Rand_cube:
 
     def generate(self):
         np.random.seed(self.seed)
-
         for _ in range(self.size):
-
             value = np.random.randint(0, 6, (3, 3))
             cube = Cube(value)
-
             self.cubes.append(cube)
 
     def pop(self):
