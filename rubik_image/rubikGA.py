@@ -33,7 +33,10 @@ class GA:
         self.best_cube = None
         self.iteration = 0
         self.max_iterations = max_iterations
-        self.tournament_size = 4
+        self.tournament_size = 5
+        self.num_children = 2
+        self.recombination_rate = 0.7
+        self.mutation_rate = 0.3
         self.solution_was_found = False
 
     def gest_best_individual(self):
@@ -65,20 +68,21 @@ class GA:
 
     # survivor selection (ok)
     def choose_survivors(self, size):
-        # remove the worst individuals and print then
-        worst_individuals = self.get_worst_individuals(size)
-        print(f"worst individuals fitness: {[i.fitness for i in worst_individuals]}", end='\n', sep=', ')
-        self.population = [i for i in self.population if i not in worst_individuals]
-        print(f"new population fitness: {[i.fitness for i in self.population]}", end='\n', sep=', ')
+        bests = sorted(self.population, reverse=True)[:size]
+        
+        for _ in range(len(self.population) - size):
+            print("Removing worst: " + str(self.population[-1].fitness))
+            self.population.remove(bests[-1])
+            bests.remove(bests[-1])
 
-    def matrix_crossover(self, parent1, parent2, num_children):
+
+    def matrix_crossover(self, parent1, parent2):
         children = []
 
-        for _ in range(num_children):
-            #empty matrix
+        for _ in range(self.num_children):
+            #new individual
             child = Individual(self)
             
-            # fill the matrix with the parents genes (random choice)
             for i in range (parent1.cubes.shape[0]):
                 for j in range(parent1.cubes.shape[1]):
                     if random.random() < 0.5:
@@ -94,27 +98,80 @@ class GA:
     # mutate n cubes of the population
     def mutation(self, individual):
         n_cubes = self.random_ints_cubes.pop()
-        print(n_cubes)
+        #print(n_cubes)
         cubes_index = random.sample(range(self.n_cubes), n_cubes)
-        print(cubes_index)
+        #print(cubes_index)
         #mutate the cubes
         for cube in cubes_index:
-            print(cube//self.n_cubes_x, cube%self.n_cubes_x)
+            #print(cube//self.n_cubes_x, cube%self.n_cubes_x)
             individual.cubes[cube//self.n_cubes_x][cube%self.n_cubes_x] = self.random_cubes.pop()
 
         individual.evaluate_fitness(self.target_cubes)
 
         return individual
+    
+    def finish_condition(self):
+        solutions = [ indiv.isSolution for indiv in self.population]
+        print("We found " + str(solutions.count(True)) + " solutions")
+        
+        if True in solutions and self.max_iterations != -1:
+            print(f"Found the solution, stopping the algorithm...")
+            self.solution_was_found = True
+            return True
+        
+        if self.iteration == self.max_iterations:
+            print(f"Reached the max iterations, stopping the algorithm...")
+            return True
+        
+        return False
+    
+    def switch_indiv(self, indiv1, indiv2):
+        self.population.remove(indiv1)
+        self.population.append(indiv2)
 
     def run(self):
         # Init population
         self.init_population()
+        
+        while not self.finish_condition():
+            self.iteration += 1
+            children = []
+            parents = []
+            print(f"\n{self.iteration}º iteration -----------\n")
+            print(f"Population fitness: {[i.fitness for i in self.population]}", end='\n', sep=', ')
+            
+            # Parent selection
+            parents = self.parent_tournament(2)
+            
+            # Recombination
+            if random.choices([True, False], weights=[self.recombination_rate, 1-self.recombination_rate], k=1)[0]:
+                print(f"Recombining parents {parents[0].fitness} and {parents[1].fitness}")
+                children = self.matrix_crossover(parents[0], parents[1])
+                
+                print(f"Children from crossover: {[i.fitness for i in children]}", end='\n', sep=', ')
+                
+            else:
+                children = parents[:self.num_children]
+                print(f"Same as the parents: {[i.fitness for i in children]}", end='\n', sep=', ')
+                
+            # Mutation
+            for ind in children:
+                self.population.append(ind)
+                
+                if random.choices([True, False], weights=[self.mutation_rate, 1-self.mutation_rate], k=1)[0]:
+                    print(f"Mutating child {ind.fitness}")
+                    
+                    ind_mutated = self.mutation(ind)
+                    print(f"Mutated child fitness: {ind_mutated.fitness}")
+                    self.switch_indiv(ind, ind_mutated)
+                    
+            # Survivor selection
+            self.choose_survivors(len(self.population))
+            
+            print("-----------------------")
+                    
         return self
 
-    def next_iteration(self):
-        self.iteration += 1
-        ga.run()
-        return
 
 
 class Individual:
@@ -163,9 +220,6 @@ class Individual:
         if (self.fitness <= 0.1):
             self.isSolution = True
 
-    def next_iteration(self):
-        self.iteration += 1
-
     def random_init(self):
         # Create an np.array of random cubes with the type Cube
         # and then create a list of cubes
@@ -206,16 +260,10 @@ class Individual:
                 image[start_row:end_row, start_col:end_col, :] = cube_times
 
         return image
+        
 
 if __name__ == "__main__":
     ga = GA()
 
-    ga.init_population()
-    save_image(ga.population[0].to_image(size_times=15, stroke_width=1), f"images/1.jpg")
-    print('old fitness: ', ga.population[0].fitness)
-    new = ga.mutation(ga.population[0])
-    save_image(new.to_image(size_times=15, stroke_width=1), f"images/2.jpg")
-    print('new fitness: ', new.fitness)
-    parents = ga.parent_tournament(2)
-    ga.matrix_crossover(parents[0], parents[1], 1)
+    ga.run()
     
