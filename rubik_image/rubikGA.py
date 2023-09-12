@@ -7,7 +7,7 @@ import random
 from datetime import datetime
 
 class GA:
-    def __init__(self, target_image_path="images/monalisa.jpg", number_of_cubes_x=4, image_size=300, random_itens_size=10000, max_iterations=10):
+    def __init__(self, target_image_path="images/cabeca-gatinha-b.png", number_of_cubes_x=2, image_size=300, random_itens_size=10000):
         if image_size % number_of_cubes_x != 0:
             raise ValueError("Image size must be divisible by number_of_cubes")
 
@@ -24,7 +24,7 @@ class GA:
         self.target_image = load_image(target_image_path)
         self.target_gray = image_to_gray_pixels(self.target_image, self.image_size, self.cube_size//3)
         self.target_cubes = gray_image_to_cubes(self.target_gray)
-        self.target_image_cubes = cubes_to_image(self.target_cubes, stroke_width=1, size_times=5, stroke_color=255)
+        self.target_image_cubes = cubes_to_image(self.target_cubes, stroke_width=0, size_times=10, stroke_color=255)
         self.random_cubes = Rand_cube(random_itens_size)
         self.random_ints = Rand(0, self.number_of_cubes - 1, random_itens_size)
         self.random_floats = Rand_float(random_itens_size)
@@ -35,7 +35,6 @@ class GA:
         self.parents = None
         self.children = None
         self.iteration = 0
-        self.max_iterations = max_iterations
         self.solution_was_found = False
 
 
@@ -100,25 +99,27 @@ class GA:
 
         return child
     
-    def medium_crossover(self, parents):
-        # new individual
+    def combine_crossover(self, parents):
+        # take the mean of the parents (cubes)
         child = Individual(self)
         
-        return child
-                    
+        for parent in parents:
+            child.cubes += parent.cubes
             
+        #child.cubes /= len(parents)
         
+        return child
 
-    def finish_condition(self):
+    def finish_condition(self, max_iterations):
         solutions = [ indiv.isSolution for indiv in self.population]
         #print("We found " + str(solutions.count(True)) + " solutions")
 
-        if True in solutions and self.max_iterations != -1:
+        if True in solutions and max_iterations != -1:
             print(f"Found the solution, stopping the algorithm...")
             self.solution_was_found = True
             return True
 
-        if self.iteration == self.max_iterations:
+        if self.iteration == max_iterations:
             print(f"Reached the max iterations, stopping the algorithm...")
             return True
 
@@ -136,13 +137,12 @@ class GA:
         self.iterations[self.iteration] = new_iteration_dict
         pass
 
-    def run(self, population_size=2000, tournament_size=10, number_of_children=2, number_of_parents=4, recombination_rate=0.9, mutation_rate=0.9):
+    def run(self, population_size=500, tournament_size=10, number_of_children=2, number_of_parents=4, recombination_rate=0.5, recombination_method="combine", mutation_rate=0.5, max_iterations=10000):
         # Init population
         
         self.init_population()
         
-        while not self.finish_condition():
-            print(f"Best fitness: {self.get_best_individual().fitness}\n")
+        while not self.finish_condition(max_iterations):
             self.iteration += 1
             print(f"{self.iteration}º iteration -----------\n")
             #print(f"Population fitness: {[i.fitness for i in self.population]}", end='\n', sep=', ')
@@ -157,11 +157,13 @@ class GA:
                     #print(f"Recombining parents {self.parents[0].fitness} and {self.parents[1].fitness}"
                     child = self.single_crossover(self.parents[0], self.parents[1])
                     self.children.append(child)
-                    print(f"Children from crossover: {[i.fitness for i in self.children]}", end='\n', sep=', ')
+                    print(f"single crossover!")
                 else:
-                    child = self.parents[self.random_ints.pop() % number_of_parents]
+                    child = self.combine_crossover(self.parents)
                     self.children.append(child)
-                    print(f"Same as the parents: {[i.fitness for i in self.children]}", end='\n', sep=', ')
+                    print(f"combined crossover!")
+                
+            print(f"Children fitness: {[i.fitness for i in self.children]}", end='\n', sep=', ')
                 
             # Mutation
             for child in self.children:
@@ -174,14 +176,13 @@ class GA:
             self.choose_survivors(population_size)
     
                 
-            print("-----------------------")
-
+            print(f"Best fitness: {self.get_best_individual().fitness}\n")
         return self
 
 
 
 class Individual:
-    def __init__(self, ga_instance, cubes=np.array([[]])):
+    def __init__(self, ga_instance, cubes=np.array([[]]), empty_init=False):
         self.fitness = 0
         self.number_of_cubes_x = ga_instance.number_of_cubes_x
         self.number_of_cubes = self.number_of_cubes_x * self.number_of_cubes_x
@@ -190,6 +191,7 @@ class Individual:
         self.random_indexes = ga_instance.random_indexes
         self.target = ga_instance.target_cubes
         self.isSolution = False
+        self.empty_init = empty_init
 
         if type(cubes) is not np.ndarray:
             raise TypeError("cubes initializer must be a numpy array")
@@ -199,7 +201,6 @@ class Individual:
             raise ValueError("cubes initializer must be a numpy array with shape (number_of_cubes_x, number_of_cubes_x)")
         else:
             self.cubes = cubes
-
 
         self.evaluate_fitness()
 
@@ -238,18 +239,23 @@ class Individual:
         # Create an np.array of random cubes with the type Cube
         # and then create a list of cubes
         # from that array
-        cubes = np.zeros((self.number_of_cubes_x, self.number_of_cubes_x), dtype=Cube)
+        if not self.state:
+            cubes = np.zeros((self.number_of_cubes_x, self.number_of_cubes_x), dtype=Cube)
 
-        for i in range(self.number_of_cubes_x):
-            for j in range(self.number_of_cubes_x):
-                cubes[i][j] = self.random_cubes.pop()
+            for i in range(self.number_of_cubes_x):
+                for j in range(self.number_of_cubes_x):
+                    cubes[i][j] = self.random_cubes.pop()
 
-        self.set_cubes(cubes)
+            self.set_cubes(cubes)
+        else:
+            # create an np.array of empty cubes
+            cubes = np.zeros((self.number_of_cubes_x, self.number_of_cubes_x), dtype=Cube)
+            self.set_cubes(cubes)
         
     # mutate n cubes of one individual
     def mutate(self):
-        
         indexes = self.random_indexes.pop()
+        print(f"Mutating indexes: {indexes}")
         for index in indexes:
             i, j = index
             self.cubes[i][j] = self.random_cubes.pop()
@@ -283,3 +289,8 @@ class Individual:
                 image[start_row:end_row, start_col:end_col, :] = cube_times
 
         return image
+
+if __name__ == "__main__":
+    ga = GA()
+    ga.init_population()
+    ga.population[0].cubes[0][0] + ga.population[0].cubes[1][0]

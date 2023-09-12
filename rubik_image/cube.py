@@ -13,11 +13,11 @@ class Cube:
 
         # mapeia de 0 a 1 onde:
         # 0 = branco
-        # 1 = azul
+        # 1 = amarelo
         # 2 = verde
-        # 3 = vermelho
-        # 4 = amarelo 
-        # 5 = laranja
+        # 3 = laranja
+        # 4 = vermelho 
+        # 5 = azul
         self.map = _map
         # gray_map sao os valores de luminancia de cada cubo
         # Isso vai ser utilizado para calcular o fitness
@@ -25,6 +25,25 @@ class Cube:
 
     def __str__(self):
         return str(self.map)
+    
+    def __add__(self, other):
+        return Cube(self.map + other.map)
+        
+    def __truediv__(self, other):
+        if isinstance(other, int) or isinstance(other, float):
+            # Perform element-wise division on the map attribute
+            new_map = self.map / other
+            return Cube(new_map)
+        else:
+            raise TypeError("Unsupported operand type for /: Cube and " + str(type(other)))
+
+    def __itruediv__(self, other):
+        if isinstance(other, int) or isinstance(other, float):
+            # Modify the current Cube object by performing element-wise division on the map attribute
+            self.map /= other
+            return self
+        else:
+            raise TypeError("Unsupported operand type for /=: Cube and " + str(type(other)))
 
     def map_color(self, k, gray_mode=False):
         color = (0, 0, 0)
@@ -33,21 +52,21 @@ class Cube:
         if k == 0: # Branco
             color = (255, 255, 255)
             color_gray = 255
-        elif k == 1: # Azul
-            color = (0, 0, 255)
-            color_gray = 29
+        elif k == 1: # Amarelo
+            color = (255, 255, 0)
+            color_gray = 178
         elif k == 2: # Verde
             color = (0, 255, 0)
             color_gray = 149
-        elif k == 3: # Vermelho
-            color = (255, 0, 0)
-            color_gray = 76
-        elif k == 4: # Amarelo
-            color = (255, 255, 0)
-            color_gray = 178
-        elif k == 5: # Laranja
+        elif k == 3: # Laranja
             color = (255, 128, 0)
             color_gray = 125
+        elif k == 4: # Vermelho
+            color = (255, 0, 0)
+            color_gray = 76
+        elif k == 5: # Azul
+            color = (0, 0, 255)
+            color_gray = 29
 
         return color_gray if gray_mode else color
 
