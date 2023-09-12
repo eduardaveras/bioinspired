@@ -1,4 +1,4 @@
-from randomizer import Rand, Rand_cube
+from randomizer import Rand, Rand_cube, Rand_index, Rand_float
 from cube import Cube
 from utils import load_image, image_to_gray_pixels, gray_image_to_cubes, cubes_to_image, save_image
 
@@ -7,169 +7,175 @@ import random
 from datetime import datetime
 
 class GA:
-    def __init__(self, target_image_path="images/monalisa.jpg", n_cubes_x=4, image_size=300, random_itens_size=10000, max_iterations=1000):
-        if image_size % n_cubes_x != 0:
-            raise ValueError("Image size must be divisible by n_cubes")
+    def __init__(self, target_image_path="images/monalisa.jpg", number_of_cubes_x=4, image_size=300, random_itens_size=10000, max_iterations=10):
+        if image_size % number_of_cubes_x != 0:
+            raise ValueError("Image size must be divisible by number_of_cubes")
 
-        if (image_size / n_cubes_x) % 3 != 0:
+        if (image_size / number_of_cubes_x) % 3 != 0:
             raise ValueError("Image size per Cube size must be divisible by 3")
 
-        if image_size / n_cubes_x < 3:
-            raise ValueError("Wrong values for n_cubes_x and image_size. Couldnt fit cubes in image!")
+        if image_size / number_of_cubes_x < 3:
+            raise ValueError("Wrong values for number_of_cubes_x and image_size. Couldnt fit cubes in image!")
 
-        self.n_cubes_x = n_cubes_x
-        self.n_cubes = n_cubes_x * n_cubes_x
-        self.cube_size = int(image_size / n_cubes_x)
+        self.number_of_cubes_x = number_of_cubes_x
+        self.number_of_cubes = number_of_cubes_x * number_of_cubes_x
+        self.cube_size = int(image_size / number_of_cubes_x)
         self.image_size = image_size
-        self.population = []
         self.target_image = load_image(target_image_path)
         self.target_gray = image_to_gray_pixels(self.target_image, self.image_size, self.cube_size//3)
         self.target_cubes = gray_image_to_cubes(self.target_gray)
         self.target_image_cubes = cubes_to_image(self.target_cubes, stroke_width=1, size_times=5, stroke_color=255)
         self.random_cubes = Rand_cube(random_itens_size)
-        self.random_ints = Rand(0, 5, random_itens_size)
-        self.random_ints_cubes = Rand(0, n_cubes_x * n_cubes_x - 1, random_itens_size)
+        self.random_ints = Rand(0, self.number_of_cubes - 1, random_itens_size)
+        self.random_floats = Rand_float(random_itens_size)
+        self.random_indexes = Rand_index(0, number_of_cubes_x - 1, random_itens_size)
 
+        self.population = []
         self.best_cube = None
+        self.parents = None
+        self.children = None
         self.iteration = 0
         self.max_iterations = max_iterations
-        self.tournament_size = 5
-        self.num_children = 2
-        self.recombination_rate = 0.7
-        self.mutation_rate = 0.3
         self.solution_was_found = False
 
-    def gest_best_individual(self):
-        return max(self.population)
 
-    def get_best_individuals(self, n):
-        return sorted(self.population, reverse=True)[:n]
+    def get_best_individual(self, list_=None):
+        if list_ == None:
+            list_ = self.population
+            
+        return min(self.population)
+    
+    def get_random_individuals(self, n, list_=None):
+        if list_ == None:
+            list_ = self.population
 
-    def get_worst_individuals(self, n):
-        return sorted(self.population, reverse=False)[:n]
+        return random.sample(list_, n)
+
+    def get_best_individuals(self, n, list_=None):
+        if list_ == None:
+            list_ = self.population
+
+        return sorted(list_)[:n]
+
+    def get_worst_individuals(self, n, list_=None):
+        if list_ == None:
+            list_ = self.population
+
+        return sorted(list_, reverse=True)[:n]
 
     def set_population(self, population):
         self.population = population
 
     def init_population(self):
-        for _ in range(self.n_cubes):
+        for _ in range(self.number_of_cubes):
             new_individual = Individual(self)
             self.population.append(new_individual)
 
-    # parent selection (ok)
-    def parent_tournament(self, parents_number):
-        list_parents = random.sample(self.population, self.tournament_size)
-        #select the best two parents
-        best_parents = sorted(list_parents, reverse=True)[:parents_number]
-        print(f"selected parent fitness: {[i.fitness for i in list_parents]}", end='\n', sep=', ')
+    # parent selection
+    def parent_tournament(self, tournament_size, parents_size):
+        list_parents = self.get_random_individuals(tournament_size)
+        #select the best {parents_size} parents
+        best_parents = self.get_best_individuals(parents_size, list_=list_parents)
+        #print(f"selected parent fitness: {[i.fitness for i in list_parents]}", end='\n', sep=', ')
         print(f"best parent fitness: {[i.fitness for i in best_parents]}",  end='\n', sep=', ')
 
         return best_parents
 
-    # survivor selection (ok)
+    # survivor selection 
     def choose_survivors(self, size):
-        bests = sorted(self.population, reverse=True)[:size]
-        
-        for _ in range(len(self.population) - size):
-            print("Removing worst: " + str(self.population[-1].fitness))
-            self.population.remove(bests[-1])
-            bests.remove(bests[-1])
+        bests = self.get_best_individuals(size, list_=self.population+self.children)
 
+        self.population = bests
 
-    def matrix_crossover(self, parent1, parent2):
-        children = []
+    def single_crossover(self, parent1, parent2):
+        #new individual
+        child = Individual(self)
 
-        for _ in range(self.num_children):
-            #new individual
-            child = Individual(self)
-            
-            for i in range (parent1.cubes.shape[0]):
-                for j in range(parent1.cubes.shape[1]):
-                    if random.random() < 0.5:
-                        child.cubes[i][j] = parent1.cubes[i][j]
-                    else:
-                        child.cubes[i][j] = parent2.cubes[i][j]
+        for i in range (parent1.cubes.shape[0]):
+            for j in range(parent1.cubes.shape[1]):
+                if self.random_floats.pop() < 0.5:
+                    child.cubes[i][j] = parent1.cubes[i][j]
+                else:
+                    child.cubes[i][j] = parent2.cubes[i][j]
 
-            children.append(child)
-
-        return children
-
-
-    # mutate n cubes of the population
-    def mutation(self, individual):
-        n_cubes = self.random_ints_cubes.pop()
-        #print(n_cubes)
-        cubes_index = random.sample(range(self.n_cubes), n_cubes)
-        #print(cubes_index)
-        #mutate the cubes
-        for cube in cubes_index:
-            #print(cube//self.n_cubes_x, cube%self.n_cubes_x)
-            individual.cubes[cube//self.n_cubes_x][cube%self.n_cubes_x] = self.random_cubes.pop()
-
-        individual.evaluate_fitness(self.target_cubes)
-
-        return individual
+        return child
     
+    def medium_crossover(self, parents):
+        # new individual
+        child = Individual(self)
+        
+        return child
+                    
+            
+        
+
     def finish_condition(self):
         solutions = [ indiv.isSolution for indiv in self.population]
-        print("We found " + str(solutions.count(True)) + " solutions")
-        
+        #print("We found " + str(solutions.count(True)) + " solutions")
+
         if True in solutions and self.max_iterations != -1:
             print(f"Found the solution, stopping the algorithm...")
             self.solution_was_found = True
             return True
-        
+
         if self.iteration == self.max_iterations:
             print(f"Reached the max iterations, stopping the algorithm...")
             return True
-        
+
         return False
-    
+
     def switch_indiv(self, indiv1, indiv2):
         self.population.remove(indiv1)
         self.population.append(indiv2)
+        
+    def save_iteration(self):
+        new_iteration_dict = {}
+        new_iteration["children"] = self.children
+        new_iteration["parents"] = self.parents
+        
+        self.iterations[self.iteration] = new_iteration_dict
+        pass
 
-    def run(self):
+    def run(self, population_size=2000, tournament_size=10, number_of_children=2, number_of_parents=4, recombination_rate=0.9, mutation_rate=0.9):
         # Init population
+        
         self.init_population()
         
         while not self.finish_condition():
+            print(f"Best fitness: {self.get_best_individual().fitness}\n")
             self.iteration += 1
-            children = []
-            parents = []
-            print(f"\n{self.iteration}º iteration -----------\n")
-            print(f"Population fitness: {[i.fitness for i in self.population]}", end='\n', sep=', ')
-            
+            print(f"{self.iteration}º iteration -----------\n")
+            #print(f"Population fitness: {[i.fitness for i in self.population]}", end='\n', sep=', ')
+
             # Parent selection
-            parents = self.parent_tournament(2)
+            self.parents = self.parent_tournament(tournament_size, number_of_parents)
             
             # Recombination
-            if random.choices([True, False], weights=[self.recombination_rate, 1-self.recombination_rate], k=1)[0]:
-                print(f"Recombining parents {parents[0].fitness} and {parents[1].fitness}")
-                children = self.matrix_crossover(parents[0], parents[1])
-                
-                print(f"Children from crossover: {[i.fitness for i in children]}", end='\n', sep=', ')
-                
-            else:
-                children = parents[:self.num_children]
-                print(f"Same as the parents: {[i.fitness for i in children]}", end='\n', sep=', ')
+            self.children = []
+            for _ in range(number_of_children):
+                if self.random_floats.pop() < recombination_rate:
+                    #print(f"Recombining parents {self.parents[0].fitness} and {self.parents[1].fitness}"
+                    child = self.single_crossover(self.parents[0], self.parents[1])
+                    self.children.append(child)
+                    print(f"Children from crossover: {[i.fitness for i in self.children]}", end='\n', sep=', ')
+                else:
+                    child = self.parents[self.random_ints.pop() % number_of_parents]
+                    self.children.append(child)
+                    print(f"Same as the parents: {[i.fitness for i in self.children]}", end='\n', sep=', ')
                 
             # Mutation
-            for ind in children:
-                self.population.append(ind)
-                
-                if random.choices([True, False], weights=[self.mutation_rate, 1-self.mutation_rate], k=1)[0]:
-                    print(f"Mutating child {ind.fitness}")
-                    
-                    ind_mutated = self.mutation(ind)
-                    print(f"Mutated child fitness: {ind_mutated.fitness}")
-                    self.switch_indiv(ind, ind_mutated)
-                    
+            for child in self.children:
+                if self.random_floats.pop() < mutation_rate:
+                    print(f"Mutating child {child.fitness}")
+                    child.mutate()
+                    print(f"Mutated child fitness: {child.fitness}")
+
             # Survivor selection
-            self.choose_survivors(len(self.population))
-            
+            self.choose_survivors(population_size)
+    
+                
             print("-----------------------")
-                    
+
         return self
 
 
@@ -177,43 +183,51 @@ class GA:
 class Individual:
     def __init__(self, ga_instance, cubes=np.array([[]])):
         self.fitness = 0
-        self.n_cubes_x = ga_instance.n_cubes_x
+        self.number_of_cubes_x = ga_instance.number_of_cubes_x
+        self.number_of_cubes = self.number_of_cubes_x * self.number_of_cubes_x
         self.random_cubes = ga_instance.random_cubes
+        self.random_ints = ga_instance.random_ints
+        self.random_indexes = ga_instance.random_indexes
+        self.target = ga_instance.target_cubes
         self.isSolution = False
 
         if type(cubes) is not np.ndarray:
             raise TypeError("cubes initializer must be a numpy array")
         elif cubes.shape == (1, 0):
             self.random_init()
-        elif cubes.shape != (self.n_cubes_x, self.n_cubes_x):
-            raise ValueError("cubes initializer must be a numpy array with shape (n_cubes_x, n_cubes_x)")
+        elif cubes.shape != (self.number_of_cubes_x, self.number_of_cubes_x):
+            raise ValueError("cubes initializer must be a numpy array with shape (number_of_cubes_x, number_of_cubes_x)")
         else:
             self.cubes = cubes
 
 
-        self.evaluate_fitness(ga_instance.target_cubes)
+        self.evaluate_fitness()
 
     def __eq__(self, other):
         return self.fitness == other.fitness
 
     def __lt__(self, other):
-        return self.fitness > other.fitness
-
-    def __gt__(self, other):
         return self.fitness < other.fitness
 
-    def __le__(self, other):
-        return self.fitness >= other.fitness
+    def __gt__(self, other):
+        return self.fitness > other.fitness
 
-    def __ge__(self, other):
+    def __le__(self, other):
         return self.fitness <= other.fitness
 
-    def evaluate_fitness(self, target_cubes):
-        max_fitness = self.n_cubes_x * self.n_cubes_x * 255 * 9
+    def __ge__(self, other):
+        return self.fitness >= other.fitness
+    
+    def set_cubes(self, cubes):
+        self.cubes = cubes
+        self.evaluate_fitness()
 
-        for i in range(0, self.n_cubes_x):
-            for j in range(0, self.n_cubes_x):
-                self.fitness += np.sum(np.abs(self.cubes[i][j].gray_map - target_cubes[i][j]))
+    def evaluate_fitness(self):
+        max_fitness = self.number_of_cubes_x * self.number_of_cubes_x * 255 * 9
+
+        for i in range(0, self.number_of_cubes_x):
+            for j in range(0, self.number_of_cubes_x):
+                self.fitness += np.sum(np.abs(self.cubes[i][j].gray_map - self.target[i][j]))
 
         self.fitness /= max_fitness
 
@@ -224,14 +238,23 @@ class Individual:
         # Create an np.array of random cubes with the type Cube
         # and then create a list of cubes
         # from that array
-        cubes = np.zeros((self.n_cubes_x, self.n_cubes_x), dtype=Cube)
+        cubes = np.zeros((self.number_of_cubes_x, self.number_of_cubes_x), dtype=Cube)
 
-        for i in range(self.n_cubes_x):
-            for j in range(self.n_cubes_x):
+        for i in range(self.number_of_cubes_x):
+            for j in range(self.number_of_cubes_x):
                 cubes[i][j] = self.random_cubes.pop()
 
-        self.cubes = cubes
-
+        self.set_cubes(cubes)
+        
+    # mutate n cubes of one individual
+    def mutate(self):
+        
+        indexes = self.random_indexes.pop()
+        for index in indexes:
+            i, j = index
+            self.cubes[i][j] = self.random_cubes.pop()
+        
+        self.evaluate_fitness()
 
     def to_image(self, size_times=1, stroke_width=0, stroke_color=255):
         cubes = self.cubes
@@ -260,10 +283,3 @@ class Individual:
                 image[start_row:end_row, start_col:end_col, :] = cube_times
 
         return image
-        
-
-if __name__ == "__main__":
-    ga = GA()
-
-    ga.run()
-    

@@ -4,3 +4,4 @@ output
 /8-rainhas/*.json
 *.txt
 *.pyc
+/rubik_image/.ipynb_checkpoints
