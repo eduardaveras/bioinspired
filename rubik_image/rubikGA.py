@@ -41,9 +41,9 @@ class GA:
     def get_best_individual(self, list_=None):
         if list_ == None:
             list_ = self.population
-            
+
         return min(self.population)
-    
+
     def get_random_individuals(self, n, list_=None):
         if list_ == None:
             list_ = self.population
@@ -80,7 +80,7 @@ class GA:
 
         return best_parents
 
-    # survivor selection 
+    # survivor selection
     def choose_survivors(self, size):
         bests = self.get_best_individuals(size, list_=self.population+self.children)
 
@@ -98,16 +98,16 @@ class GA:
                     child.cubes[i][j] = parent2.cubes[i][j]
 
         return child
-    
+
     def combine_crossover(self, parents):
         # take the mean of the parents (cubes)
         child = Individual(self)
-        
+
         for parent in parents:
             child.cubes += parent.cubes
-            
+
         #child.cubes /= len(parents)
-        
+
         return child
 
     def finish_condition(self, max_iterations):
@@ -128,20 +128,20 @@ class GA:
     def switch_indiv(self, indiv1, indiv2):
         self.population.remove(indiv1)
         self.population.append(indiv2)
-        
+
     def save_iteration(self):
         new_iteration_dict = {}
         new_iteration["children"] = self.children
         new_iteration["parents"] = self.parents
-        
+
         self.iterations[self.iteration] = new_iteration_dict
         pass
 
     def run(self, population_size=500, tournament_size=10, number_of_children=2, number_of_parents=4, recombination_rate=0.5, recombination_method="combine", mutation_rate=0.5, max_iterations=10000):
         # Init population
-        
+
         self.init_population()
-        
+
         while not self.finish_condition(max_iterations):
             self.iteration += 1
             print(f"{self.iteration}º iteration -----------\n")
@@ -149,7 +149,7 @@ class GA:
 
             # Parent selection
             self.parents = self.parent_tournament(tournament_size, number_of_parents)
-            
+
             # Recombination
             self.children = []
             for _ in range(number_of_children):
@@ -162,9 +162,9 @@ class GA:
                     child = self.combine_crossover(self.parents)
                     self.children.append(child)
                     print(f"combined crossover!")
-                
+
             print(f"Children fitness: {[i.fitness for i in self.children]}", end='\n', sep=', ')
-                
+
             # Mutation
             for child in self.children:
                 if self.random_floats.pop() < mutation_rate:
@@ -174,8 +174,8 @@ class GA:
 
             # Survivor selection
             self.choose_survivors(population_size)
-    
-                
+
+
             print(f"Best fitness: {self.get_best_individual().fitness}\n")
         return self
 
@@ -218,7 +218,7 @@ class Individual:
 
     def __ge__(self, other):
         return self.fitness >= other.fitness
-    
+
     def set_cubes(self, cubes):
         self.cubes = cubes
         self.evaluate_fitness()
@@ -251,7 +251,7 @@ class Individual:
             # create an np.array of empty cubes
             cubes = np.zeros((self.number_of_cubes_x, self.number_of_cubes_x), dtype=Cube)
             self.set_cubes(cubes)
-        
+
     # mutate n cubes of one individual
     def mutate(self):
         indexes = self.random_indexes.pop()
@@ -259,7 +259,7 @@ class Individual:
         for index in indexes:
             i, j = index
             self.cubes[i][j] = self.random_cubes.pop()
-        
+
         self.evaluate_fitness()
 
     def to_image(self, size_times=1, stroke_width=0, stroke_color=255):
