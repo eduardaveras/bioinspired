@@ -30,20 +30,7 @@ class Cube:
         return Cube(self.map + other.map)
         
     def __truediv__(self, other):
-        if isinstance(other, int) or isinstance(other, float):
-            # Perform element-wise division on the map attribute
-            new_map = self.map / other
-            return Cube(new_map)
-        else:
-            raise TypeError("Unsupported operand type for /: Cube and " + str(type(other)))
-
-    def __itruediv__(self, other):
-        if isinstance(other, int) or isinstance(other, float):
-            # Modify the current Cube object by performing element-wise division on the map attribute
-            self.map /= other
-            return self
-        else:
-            raise TypeError("Unsupported operand type for /=: Cube and " + str(type(other)))
+        return Cube(np.round(self.map / other).astype(int))
 
     def map_color(self, k, gray_mode=False):
         color = (0, 0, 0)

@@ -31,10 +31,12 @@ class GA:
         self.random_indexes = Rand_index(0, number_of_cubes_x - 1, random_itens_size)
 
         self.population = []
+        self.population_size = 0
         self.best_cube = None
         self.parents = None
         self.children = None
         self.iteration = 0
+        self.recombine = None
         self.solution_was_found = False
 
 
@@ -65,8 +67,10 @@ class GA:
     def set_population(self, population):
         self.population = population
 
-    def init_population(self):
-        for _ in range(self.number_of_cubes):
+    def init_population(self, population_size):
+        self.population_size = population_size
+
+        for _ in range(population_size):
             new_individual = Individual(self)
             self.population.append(new_individual)
 
@@ -100,13 +104,14 @@ class GA:
         return child
 
     def combine_crossover(self, parents):
-        # take the mean of the parents (cubes)
-        child = Individual(self)
+        # new indicidual with empty cubes
+        child = Individual(self, empty_init=True)
 
         for parent in parents:
             child.cubes += parent.cubes
-
-        #child.cubes /= len(parents)
+    
+        child.cubes /= len(parents)
+        child.evaluate_fitness()
 
         return child
 
@@ -130,17 +135,21 @@ class GA:
         self.population.append(indiv2)
 
     def save_iteration(self):
-        new_iteration_dict = {}
-        new_iteration["children"] = self.children
-        new_iteration["parents"] = self.parents
-
-        self.iterations[self.iteration] = new_iteration_dict
         pass
 
-    def run(self, population_size=500, tournament_size=10, number_of_children=2, number_of_parents=4, recombination_rate=0.5, recombination_method="combine", mutation_rate=0.5, max_iterations=10000):
-        # Init population
+    def set_recombination_method(self, method):
+        if method == "combine":
+            self.recombine = self.combine_crossover
+        elif method == "single":
+            self.recombine = self.single_crossover
+        else:
+            raise ValueError("Recombination method must be 'combine' or 'single'")
 
-        self.init_population()
+
+    def run(self, population_size=1000, tournament_size=20, number_children=6, number_parents=12, size_subparents=4, recombination_rate=0.9, recombination_method="combine", mutation_rate=0.4, max_iterations=10000):
+        # Init population
+        self.init_population(population_size)
+        self.set_recombination_method(recombination_method)
 
         while not self.finish_condition(max_iterations):
             self.iteration += 1
@@ -148,20 +157,15 @@ class GA:
             #print(f"Population fitness: {[i.fitness for i in self.population]}", end='\n', sep=', ')
 
             # Parent selection
-            self.parents = self.parent_tournament(tournament_size, number_of_parents)
+            self.parents = self.parent_tournament(tournament_size, number_parents)
 
             # Recombination
             self.children = []
-            for _ in range(number_of_children):
+            for _ in range(number_children):
                 if self.random_floats.pop() < recombination_rate:
-                    #print(f"Recombining parents {self.parents[0].fitness} and {self.parents[1].fitness}"
-                    child = self.single_crossover(self.parents[0], self.parents[1])
+                    subparents = self.get_random_individuals(size_subparents, list_=self.parents)
+                    child = self.recombine(subparents)
                     self.children.append(child)
-                    print(f"single crossover!")
-                else:
-                    child = self.combine_crossover(self.parents)
-                    self.children.append(child)
-                    print(f"combined crossover!")
 
             print(f"Children fitness: {[i.fitness for i in self.children]}", end='\n', sep=', ')
 
@@ -184,6 +188,7 @@ class GA:
 class Individual:
     def __init__(self, ga_instance, cubes=np.array([[]]), empty_init=False):
         self.fitness = 0
+        self.ga = ga
         self.number_of_cubes_x = ga_instance.number_of_cubes_x
         self.number_of_cubes = self.number_of_cubes_x * self.number_of_cubes_x
         self.random_cubes = ga_instance.random_cubes
@@ -196,7 +201,7 @@ class Individual:
         if type(cubes) is not np.ndarray:
             raise TypeError("cubes initializer must be a numpy array")
         elif cubes.shape == (1, 0):
-            self.random_init()
+            self.init()
         elif cubes.shape != (self.number_of_cubes_x, self.number_of_cubes_x):
             raise ValueError("cubes initializer must be a numpy array with shape (number_of_cubes_x, number_of_cubes_x)")
         else:
@@ -235,11 +240,11 @@ class Individual:
         if (self.fitness <= 0.1):
             self.isSolution = True
 
-    def random_init(self):
+    def init(self):
         # Create an np.array of random cubes with the type Cube
         # and then create a list of cubes
         # from that array
-        if not self.state:
+        if not self.empty_init:
             cubes = np.zeros((self.number_of_cubes_x, self.number_of_cubes_x), dtype=Cube)
 
             for i in range(self.number_of_cubes_x):
@@ -250,17 +255,31 @@ class Individual:
         else:
             # create an np.array of empty cubes
             cubes = np.zeros((self.number_of_cubes_x, self.number_of_cubes_x), dtype=Cube)
+
+            for i in range(self.number_of_cubes_x):
+                for j in range(self.number_of_cubes_x):
+                    cubes[i][j] = Cube(np.zeros((3, 3), dtype=np.uint8))
+
             self.set_cubes(cubes)
 
     # mutate n cubes of one individual
     def mutate(self):
         indexes = self.random_indexes.pop()
         print(f"Mutating indexes: {indexes}")
+        old_mutated = Individual(self.ga,cubes=self.cubes)
         for index in indexes:
             i, j = index
             self.cubes[i][j] = self.random_cubes.pop()
 
         self.evaluate_fitness()
+        
+        
+        if self > old_mutated:
+            print(f"Mutated fitness: {self.fitness}")
+            print(f"Old mutated fitness: {old_mutated.fitness}")
+            print(f"Mutated fitness is worse than old mutated fitness, switching back...")
+            self.set_cubes(old_mutated.cubes)
+            self.fitness = old_mutated.fitness
 
     def to_image(self, size_times=1, stroke_width=0, stroke_color=255):
         cubes = self.cubes
@@ -291,6 +310,5 @@ class Individual:
         return image
 
 if __name__ == "__main__":
-    ga = GA()
-    ga.init_population()
-    ga.population[0].cubes[0][0] + ga.population[0].cubes[1][0]
+    ga = GA(number_of_cubes_x=4)
+    ga.run()
