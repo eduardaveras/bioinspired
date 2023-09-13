@@ -92,7 +92,7 @@ class GA:
 
     def single_crossover(self, parent1, parent2):
         #new individual
-        child = Individual(self)
+        child = Individual(self, empty_init=True)
 
         for i in range (parent1.cubes.shape[0]):
             for j in range(parent1.cubes.shape[1]):
@@ -146,7 +146,7 @@ class GA:
             raise ValueError("Recombination method must be 'combine' or 'single'")
 
 
-    def run(self, population_size=1000, tournament_size=20, number_children=6, number_parents=12, size_subparents=4, recombination_rate=0.9, recombination_method="combine", mutation_rate=0.4, max_iterations=10000):
+    def run(self, population_size=1000, tournament_size=20, number_children=6, number_parents=12, size_subparents=2, recombination_rate=0.9, recombination_method="combine", mutation_rate=0.4, max_iterations=10000):
         # Init population
         self.init_population(population_size)
         self.set_recombination_method(recombination_method)
@@ -164,8 +164,11 @@ class GA:
             for _ in range(number_children):
                 if self.random_floats.pop() < recombination_rate:
                     subparents = self.get_random_individuals(size_subparents, list_=self.parents)
-                    child = self.recombine(subparents)
+                    # child = self.recombine(subparents)
+                    child = self.recombine(subparents[0], subparents[1])
                     self.children.append(child)
+                else:
+                    child = self.get_random_individual(list_=self.parents)
 
             print(f"Children fitness: {[i.fitness for i in self.children]}", end='\n', sep=', ')
 
@@ -310,5 +313,7 @@ class Individual:
         return image
 
 if __name__ == "__main__":
+    from time import time
+    np.random.seed(int(time()))
     ga = GA(number_of_cubes_x=4)
     ga.run()
