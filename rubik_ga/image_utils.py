@@ -119,6 +119,18 @@ def image_gray_to_image_cubes_color(image_gray):
 
     return image
 
+def cubemap_to_image(cube_map, resize=250):
+        __image__ = np.zeros((3, 3, 3), np.uint8)
+
+        for i in range(3):
+            for j in range(3):
+                __image__[i, j] = corresponding_color(cube_map[i,j]) 
+
+        if resize != 0:
+            return resize_pixeled(__image__, resize)
+        
+        return __image__  
+
 def cubes_to_image(cubes, stroke_width=0, size_times=1, stroke_color=255):
     image = np.zeros((cubes.shape[0]*3*size_times, cubes.shape[1]*3*size_times), dtype=np.uint8)
 

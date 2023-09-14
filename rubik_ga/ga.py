@@ -1,5 +1,6 @@
 from cube import Cube
 from image_utils import *
+import random
 
 class cubesToImage:
     def __init__(self, target_image_path="images/cabeca-gatinha-b.png", n_cubes_x=5, image_size=450, random_itens_size=10000):
@@ -22,7 +23,7 @@ class cubesToImage:
         self.target_image_gray_cubes = cubes_to_image(self.target_cubes, stroke_width=0, size_times=10, stroke_color=255)
 
 class GA:
-    def __init__(self, target_cube, population_size=100):
+    def __init__(self, target_cube, population_size=10):
         self.target_cube = target_cube
 
         self.population = []
@@ -42,7 +43,18 @@ class GA:
         for _ in range(0, self.population_size):
             cube = Cube(self.target_cube)
             self.population.append(cube)
-
+            
+    def parent_selection(self, tournament_size, n_parents):
+        list_parents = random.sample(self.population, tournament_size)
+        best_parents = sorted(list_parents, key=lambda x: x.fitness, reverse=False)[:n_parents]
+        
+        return best_parents
+    
+    def choose_survivors(self, n_survivors):
+        survivors = sorted(self.population, key=lambda x: x.fitness, reverse=False)[:n_survivors]
+        
+        return survivors
+    
 if __name__ == "__main__":
     cti = cubesToImage()
     ga = GA()
