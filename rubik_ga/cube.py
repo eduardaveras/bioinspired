@@ -4,15 +4,19 @@ from constants import *
 from image_utils import corresponding_gray, corresponding_color, resize_pixeled, gray_nearest
 from cube_utils import *
 from functools import total_ordering
-
+import cv2
+import json
 
 @total_ordering
 class Cube(lib.Cube):
-    def __init__(self, target_gray_face, move_history=[]):
+    def __init__(self, target_gray_face, move_history=[], fixedFace=None):
         super().__init__()
         self.move_history = move_history
         self.target_gray_face = target_gray_face
-        self.fitness = 0
+        self.fitness = 2
+        self.fitness_face = FRONT
+        self.output = ""
+        self.fixedFace = fixedFace
 
         self.init(move_history)
 
@@ -22,35 +26,52 @@ class Cube(lib.Cube):
     def __lt__(self, other):
         return self.fitness < other.fitness
 
+    def best_face(self):
+        if self.fitness_face is not None and isinstance(self.fitness_face, str):
+            return self.faces[self.fitness_face]
+        
+        raise Exception("Fitness face is not a string")
+
     def add_exec_eval(self, move):
         self.move_history = np.concatenate((self.move_history, move))
         self.execute(move)
         self.evaluate_fitness()
 
-    def image(self, resize=0):
+        if self.fixedFace is not None:
+            self.fitness_face = self.fixedFace
+
+    def image(self, resize=0, stroke=False, strokeColor=0):
+        if self.fitness_face is None or not isinstance(self.fitness_face, str):
+            raise Exception("Fitness face is not a string")
+
         __image__ = np.zeros((3, 3, 3), np.uint8)
-        __front_face__ = self.front_face()
+        __front_face__ = self.faces[self.fitness_face]
 
         for i in range(3):
             for j in range(3):
                 __image__[i, j] = corresponding_color(__front_face__[i,j])
 
         if resize != 0:
+            img = resize_pixeled(__image__, resize)
+            if stroke:
+                return cv2.copyMakeBorder(img, 1, 1, 1, 1, cv2.BORDER_CONSTANT, value=strokeColor)
+
             return resize_pixeled(__image__, resize)
 
         return __image__
 
-    def front_face(self, gray=False):
-        front_face = self.faces[FRONT]
+    def gray_faces(self):
 
-        if gray:
+        gray_faces = {}
+        for face, value in self.faces.items():
             gray_face = np.zeros((3, 3), dtype=np.uint8)
             for i in range(3):
                 for j in range(3):
-                    gray_face[i, j] = corresponding_gray(front_face[i, j])
-            return gray_face
+                    gray_face[i, j] = corresponding_gray(value[i, j])
 
-        return front_face
+            gray_faces[face] = gray_face
+
+        return gray_faces
 
     def init(self, move_history, length=3):
         self.execute(["x'"]) # Começa com a face branca para cima
@@ -61,17 +82,29 @@ class Cube(lib.Cube):
         self.add_exec_eval(move_history)
 
     def evaluate_fitness(self):
-        gray_face = self.front_face(gray=True)
+        gray_faces = self.gray_faces()
         target_gray = self.target_gray_face
-        self.fitness = (np.sum(np.abs(gray_face.astype(int) - target_gray.astype(int)))) / (2034)
+
+        best = (None, 2)
+        for identification, face in gray_faces.items():
+            fitness = (np.sum(np.abs(face.astype(int) - target_gray.astype(int)))) / (2034)
+
+            if fitness < best[1]:
+                best = (identification, fitness)
+
+        self.fitness_face, self.fitness = best
+
 
     def mutate(self):
-        scramble = random_scramble(orientation_probability=0.5,
-                                   permutation_probability=0.5,
-                                   single_move_probability=0.5,
-                                   rotation_probability=0.5
+        scramble = random_scramble(orientation_probability=0.2,
+                                   permutation_probability=0.4,
+                                   single_move_probability=0.8,
+                                   rotation_probability=0.2
                                    )
         self.add_exec_eval(scramble)
+
+    def export(self):
+        return json.dumps({"fitness": self.fitness, "move_history": ' '.join(self.move_history.tolist())})
 
     def crossover_with(self, other):
         _cut_point = np.random.randint(0, len(self.move_history))
@@ -86,9 +119,9 @@ class Cube(lib.Cube):
         return children
 
 class cube_GA:
-    def __init__(self, target_gray_face, population_size=100, mutation_rate=0.9,
+    def __init__(self, target_gray_face, population_size=1000, mutation_rate=0.9,
                  crossover_rate=0.3, max_generations=1000,
-                 parent_pool_size=5, parents_number=2):
+                 parent_pool_size=10, parents_number=4):
 
         self.target_gray_face = target_gray_face
         self.population_size = 100
@@ -105,6 +138,7 @@ class cube_GA:
         self.generation = 0
         self.best_cube = None
         self.generation_info = {}
+        self.output = []
 
     def get_best(self, __list__=None):
         if __list__ is None:
@@ -142,15 +176,30 @@ class cube_GA:
 
         if key is None:
             _info["best_fitness"] = self.get_best().fitness
-            _info["best_cube"] = self.get_best().front_face
-            _info["best_moves"] = self.get_best().move_history
-            _info["population"] = self.get_bests_fitness()
+            _info["best_cube"] = (str(self.get_best().best_face().tolist()))
+            _info["best_moves"] = ' '.join(self.get_best().move_history)
+            _info["population"] = self.get_bests_fitness(n=len(self.population))
             _info["parents"] = self.get_bests_fitness(__list__=self.parents)
             _info["children"] = self.get_bests_fitness(__list__=self.children)
             _info["mean_fitness"] = np.mean(_info["population"])
             _info["std_fitness"] = np.std(_info["population"])
+            _info["population"] = str(_info["population"])
+
+            self.output += f"Generation: {self.generation}\n" + \
+                           f"Best fitness: {_info['best_fitness']}\n" + \
+                           f"Best moves: {_info['best_moves']}\n" + \
+                           f"Parents: {_info['parents']}\n" + \
+                           f"Children: {_info['children']}\n" + \
+                           f"-------------------\n"
+
         else:
             _info[key] = info
+            self.output += f"{key}: {info}\n"
+
+
+    def log(self):
+        print(self.output)
+        self.output = ""
 
     def init_population(self):
         self.population = [Cube(self.target_gray_face) for _ in range(self.population_size)]
@@ -171,7 +220,7 @@ class cube_GA:
         indexes = np.random.choice(len(self.population), self.parent_pool_size, replace=False)
         parent_pool = [self.population[i] for i in indexes]
 
-        self.append_info(key="parents_pool", info=[parent.fitness for parent in parent_pool])
+        self.append_info(key="parents_pool", info=str([parent.fitness for parent in parent_pool]))
         return self.get_bests(n=self.parents_number, __list__=parent_pool)
 
     def generate_children(self, crossover_rate=0.5):
@@ -191,10 +240,10 @@ class cube_GA:
                 children.append(pair[0])
                 children.append(pair[1])
 
-        self.append_info(key="children_b4mutation", info=[child.fitness for child in children])
+        self.append_info(key="Children before mutation", info=[child.fitness for child in children])
         return children
 
-    def run(self):
+    def run(self, verbose=False, animate=False):
         self.init_population()
 
         while not self.end_condition():
@@ -209,6 +258,8 @@ class cube_GA:
 
             self.append_info()
             self.get_survivors()
+            if verbose:
+                self.log()
 
         return self.generation_info
 
@@ -216,8 +267,6 @@ if __name__ == "__main__":
     test_target = np.array([[125, 125, 125],
                             [ 76,  76,  29],
                             [ 76,  29,  29]], dtype=np.uint8)
+    
     ga = cube_GA(test_target)
-    ga.run()
-
-
-
+    ga.run(verbose=True, animate=False)
