@@ -55,3 +55,5 @@ PERMUTATIONS = [
     # H permutation: U Face, swaps the edges horizontally and vertically
     "M2 U M2 U2 M2 U M2".split(" ")
 ]
+
+ALL_MOVES = SINGLE_MOVES + FULL_ROTATIONS + ORIENTATIONS + PERMUTATIONS
