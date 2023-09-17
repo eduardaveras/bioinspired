@@ -1,5 +1,5 @@
-from cube import Cube
 from image_utils import *
+from cube import cube_GA 
 import random
 
 class cubesToImage:
@@ -22,39 +22,15 @@ class cubesToImage:
         self.target_cubes = gray_image_to_cubes(self.target_gray_nearest)
         self.target_image_gray_cubes = cubes_to_image(self.target_cubes, stroke_width=0, size_times=10, stroke_color=255)
 
-class GA:
-    def __init__(self, target_cube, population_size=10):
-        self.target_cube = target_cube
-
-        self.population = []
-        self.population_size = population_size
-
-        self.crossover_rate = 0.7
-        self.mutation_rate = 0.01
-        self.elitism_rate = 0.1
-        self.max_generations = 1000
-        self.max_fitness = 1
-        self.min_fitness = 0
-        self.fitness = []
-        self.best_individual = None
-        self.best_fitness = 0
-
-    def init_population(self):
-        for _ in range(0, self.population_size):
-            cube = Cube(self.target_cube)
-            self.population.append(cube)
-            
-    def parent_selection(self, tournament_size, n_parents):
-        list_parents = random.sample(self.population, tournament_size)
-        best_parents = sorted(list_parents, key=lambda x: x.fitness, reverse=False)[:n_parents]
-        
-        return best_parents
-    
-    def choose_survivors(self, n_survivors):
-        survivors = sorted(self.population, key=lambda x: x.fitness, reverse=False)[:n_survivors]
-        
-        return survivors
-    
 if __name__ == "__main__":
     cti = cubesToImage()
-    ga = GA()
+    args = {
+        "population_size": 1000,
+        "mutation_rate": 0.9,
+        "crossover_rate": 0.3,
+        "max_generations": 1000,
+        "parent_pool_size": 10,
+        "parents_number":  4
+    }
+
+    gas = [cube_GA(cti.target_cubes[i], **args) for i in range(cti.n_cubes_x**2)]
