@@ -24,13 +24,25 @@ class cubesToImage:
         self.target_image_gray_cubes = cubes_to_image(self.target_cubes, stroke_width=0, size_times=10, stroke_color=255)
 
         self.gas = np.zeros((self.n_cubes_x, self.n_cubes_x), dtype=object)
+        self.bests = {}
 
-    def run(self, args):
+    def run(self, args, filename=""):
+
         for i in range(self.n_cubes_x):
+            self.bests[i] = {}
             for j in range(self.n_cubes_x):
                 self.gas[i][j] = cb.cube_GA(self.target_cubes[i][j], **args)
                 self.gas[i][j].run()
-                print("" + str(i) + ","+ str(j) + " " + "Generations " + str(self.gas[i][j].generation) + " Fitness: " + str(self.gas[i][j].get_best().fitness))
+                gen = self.gas[i][j].generation
+                self.bests[i][j] = self.gas[i][j].generation_info[gen]
+                print(str(i) + ","+ str(j) + "-" + " Generations " + str(self.gas[i][j].generation) + "- Fitness: " + str(self.gas[i][j].get_best().fitness))
+                
+        # write bests to json file
+        if filename != "":
+            import json
+            with open('runs/' + filename + '.json', 'w') as outfile:
+                json.dump(self.bests, outfile, indent=3)
+
 
     def best_image(self, stroke_width, size_multiply, border):
         final_cubes = np.zeros((self.n_cubes_x, self.n_cubes_x, 3, 3), dtype=np.uint8)
@@ -58,14 +70,12 @@ def cube_to_animation(target_cube, moves, filename="cube_moves", fixedFace=None,
 
 
 if __name__ == "__main__":
-    cti = cubesToImage()
+    cti = cubesToImage(n_cubes_x=5)
     args = {
-        "population_size": 1000,
+        "population_size": 300,
         "mutation_rate": 0.9,
         "crossover_rate": 0.3,
-        "max_generations": 1000,
+        "max_generations": 10,
         "parent_pool_size": 10,
         "parents_number":  4
     }
-
-    gas = [cube_GA(cti.target_cubes[i], **args) for i in range(cti.n_cubes_x**2)]

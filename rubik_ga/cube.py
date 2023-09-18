@@ -211,7 +211,7 @@ class cube_GA:
         if self.max_generations == self.generation:
             return True
 
-        if self.get_best().fitness == 0:
+        if self.get_best().fitness == 0 and self.generation > 0:
             return True
 
         return False
