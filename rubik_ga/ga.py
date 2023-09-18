@@ -1,6 +1,7 @@
 from image_utils import *
-import cube
+import cube as cb
 import random
+import imageio
 
 class cubesToImage:
     def __init__(self, target_image_path="images/cabeca-gatinha-b.png", n_cubes_x=5, image_size=450, random_itens_size=10000):
@@ -39,6 +40,21 @@ class cubesToImage:
                 final_cubes[i][j] = self.gas[i][j].get_best().image()
 
         return image_gray_to_image_cubes_color(cubes_to_image(final_cubes, stroke_width, size_multiply, border))
+
+def cube_to_animation(target_cube, moves, filename="cube_moves", fixedFace=None, save=False):
+    cube = cb.Cube(np.zeros((3, 3, 3)), move_history=["x"], fixedFace=fixedFace)
+    frames = []
+    initial_image = image_gray_to_image_cubes_color(cube.image(150))
+    frames.append(initial_image)
+
+    for move in moves:
+        cube.execute([move])
+        img = image_gray_to_image_cubes_color(cube.image(150))
+        frames.append(img)
+
+    frames = [imageio.imread(frame) if not isinstance(frame, np.ndarray) else frame for frame in frames]
+    if save:
+        imageio.mimsave('images/' + filename + '.gif', frames, duration=0.5, loop=0)
 
 
 if __name__ == "__main__":
