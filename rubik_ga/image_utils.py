@@ -84,7 +84,7 @@ def corresponding_color(value, string_mode=False):
     if value == 29 or value == "B":
         return (0, 0, 255) if not string_mode else "B"
     
-    raise ValueError("Value must be 255, 178, 125, 76 or 29")
+    return value
 
 def corresponding_gray(value):
     if value == (255, 255, 255) or value == "W":
@@ -104,6 +104,8 @@ def corresponding_gray(value):
 
     if value == (0, 0, 255) or value == "B":
         return 29
+    
+    return value
 
 def image_gray_to_image_cubes_color(image_gray):
         
