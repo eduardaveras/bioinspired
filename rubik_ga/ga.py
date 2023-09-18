@@ -1,5 +1,5 @@
 from image_utils import *
-from cube import cube_GA 
+import cube
 import random
 
 class cubesToImage:
@@ -21,6 +21,25 @@ class cubesToImage:
         self.target_color_cubes = image_gray_to_image_cubes_color(self.target_gray_nearest)
         self.target_cubes = gray_image_to_cubes(self.target_gray_nearest)
         self.target_image_gray_cubes = cubes_to_image(self.target_cubes, stroke_width=0, size_times=10, stroke_color=255)
+
+        self.gas = np.zeros((self.n_cubes_x, self.n_cubes_x), dtype=object)
+
+    def run(self, args):
+        for i in range(self.n_cubes_x):
+            for j in range(self.n_cubes_x):
+                self.gas[i][j] = cube.cube_GA(self.target_cubes[i][j], **args)
+                self.gas[i][j].run()
+                print("" + str(i) + ","+ str(j) + " " + "Generations" + str(self.gas[i][j].generation) + "Fitness:" + str(self.gas[i][j].get_best().fitness))
+
+    def best_image(self, stroke_width, size_multiply, border):
+        final_cubes = np.zeros((self.n_cubes_x, self.n_cubes_x, 3, 3), dtype=np.uint8)
+
+        for i in range(self.n_cubes_x):
+            for j in range(self.n_cubes_x):
+                final_cubes[i][j] = self.gas[i][j].get_best().image()
+
+        return image_gray_to_image_cubes_color(cubes_to_image(final_cubes, stroke_width, size_multiply, border))
+
 
 if __name__ == "__main__":
     cti = cubesToImage()
