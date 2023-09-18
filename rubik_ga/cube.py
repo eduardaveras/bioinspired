@@ -44,12 +44,12 @@ class Cube(lib.Cube):
         if self.fitness_face is None or not isinstance(self.fitness_face, str):
             raise Exception("Fitness face is not a string")
 
-        __image__ = np.zeros((3, 3, 3), np.uint8)
+        __image__ = np.zeros((3,3) , np.uint8)
         __front_face__ = self.faces[self.fitness_face]
 
         for i in range(3):
             for j in range(3):
-                __image__[i, j] = corresponding_color(__front_face__[i,j])
+                __image__[i, j] = corresponding_gray(__front_face__[i,j])
 
         if resize != 0:
             img = resize_pixeled(__image__, resize)
