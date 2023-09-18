@@ -28,9 +28,9 @@ class cubesToImage:
     def run(self, args):
         for i in range(self.n_cubes_x):
             for j in range(self.n_cubes_x):
-                self.gas[i][j] = cube.cube_GA(self.target_cubes[i][j], **args)
+                self.gas[i][j] = cb.cube_GA(self.target_cubes[i][j], **args)
                 self.gas[i][j].run()
-                print("" + str(i) + ","+ str(j) + " " + "Generations" + str(self.gas[i][j].generation) + "Fitness:" + str(self.gas[i][j].get_best().fitness))
+                print("" + str(i) + ","+ str(j) + " " + "Generations " + str(self.gas[i][j].generation) + " Fitness: " + str(self.gas[i][j].get_best().fitness))
 
     def best_image(self, stroke_width, size_multiply, border):
         final_cubes = np.zeros((self.n_cubes_x, self.n_cubes_x, 3, 3), dtype=np.uint8)

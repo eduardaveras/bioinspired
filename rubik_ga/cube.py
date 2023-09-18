@@ -75,7 +75,7 @@ class Cube(lib.Cube):
 
     def init(self, move_history, length=3):
         self.execute(["x'"]) # Começa com a face branca para cima
-        if move_history == []:
+        if len(move_history) == 0:
             scramble = [np.random.choice(SINGLE_MOVES) for _ in range(length)]
             move_history = scramble
 
