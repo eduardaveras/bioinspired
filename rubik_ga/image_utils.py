@@ -109,7 +109,7 @@ def image_gray_to_image_cubes_color(image_gray):
         
     image = np.zeros((image_gray.shape[0], image_gray.shape[1], 3), dtype=np.uint8)
 
-    nearest = np.array([255, 178, 125, 76, 29])
+    nearest = np.array([255, 178, 149, 125, 76, 29])
     for i in range(image_gray.shape[0]):
         for j in range(image_gray.shape[1]):
             pixel = np.full(len(nearest), image_gray[i, j])
