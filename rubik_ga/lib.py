@@ -16,6 +16,7 @@ class Cube:
         }
 
         self.moves_lookup = {
+            "": lambda: None,
             # hortizontal
             "D": self.D, "D'": self.D_prime, "D2": self.D2,
             "E": self.E, "E'": self.E_prime, "E2": self.E2,

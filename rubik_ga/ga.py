@@ -56,20 +56,54 @@ class cubesToImage:
 
         return image_gray_to_image_cubes_color(cubes_to_image(final_cubes, stroke_width, size_multiply, border))
 
-def cube_to_animation(target_cube, moves, filename="cube_moves", fixedFace=None, save=False):
-    cube = cb.Cube(np.zeros((3, 3, 3)), move_history=["x"], fixedFace=fixedFace)
-    frames = []
-    initial_image = image_gray_to_image_cubes_color(cube.image(150))
-    frames.append(initial_image)
+def best_image(self, stroke_width, size_multiply, border):
+    final_cubes = np.zeros((self.n_cubes_x, self.n_cubes_x, 3, 3), dtype=np.uint8)
 
-    for move in moves:
-        cube.execute([move])
-        img = image_gray_to_image_cubes_color(cube.image(150))
-        frames.append(img)
+    for i in range(self.n_cubes_x):
+        for j in range(self.n_cubes_x):
+            final_cubes[i][j] = self.gas[i][j].get_best().image()
+
+    return image_gray_to_image_cubes_color(cubes_to_image(final_cubes, stroke_width, size_multiply, border))
+
+def animate_cube_movements(n_cubes_x, stroke_width, size_multiply, border, read_filename, write_filename, animation="parallel", duration=50):
+    import json
+    with open(read_filename) as json_file:
+        data = json.load(json_file)
+
+    cubes_history = []
+    cubes_clone = []
+    cubes_frames = []
+    i = 0
+
+    for _, row in data.items():
+        for _, v in row.items():
+            moves = v["best_moves"].split()
+            face = v["best_face"]
+            cubes_history.append(moves)
+            cubes_clone.append(cb.Cube(np.zeros((3,3), dtype=np.uint8), fixedFace=face, move_history=[""]))
+        i += 1
+
+    frames = []
+    i = 0
+    while(max([len(x) for x in cubes_history]) > 0):
+        cubes_images = []
+
+        for z in range(len(cubes_clone)):
+
+            if len(cubes_history[i]) > 0:
+                cubes_clone[i].execute([cubes_history[i].pop(0)])
+
+            cubes_images.append(cubes_clone[z].image())
+
+        if len(cubes_history[i]) == 0:
+            i += 1
+
+        cubes_images = np.array(cubes_images).reshape((n_cubes_x, n_cubes_x, 3,3))
+        frames.append(image_gray_to_image_cubes_color(cubes_to_image(np.array(cubes_images), stroke_width, size_multiply, border)))
+        print("Frame " + str(len(frames)))
 
     frames = [imageio.imread(frame) if not isinstance(frame, np.ndarray) else frame for frame in frames]
-    if save:
-        imageio.mimsave('images/' + filename + '.gif', frames, duration=0.5, loop=0)
+    imageio.mimsave('images/gifs/' + write_filename + '.gif', frames, duration=duration, loop=0)
 
 if __name__ == "__main__":
     cti = cubesToImage(n_cubes_x=5)

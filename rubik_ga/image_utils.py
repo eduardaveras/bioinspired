@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import time
 
 # Carrega a imagem a partir de um path
 def load_image(path):
@@ -23,7 +22,6 @@ def equalize_image(image, alpha=1.5, beta=30):
     # Convert back to BGR
     img_output = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
     return img_output
-
 
 # Retorna os tons de cinza da imagem em um array size//cube_size x size//cube_size
 def image_to_gray_pixels(image, size, pixel_size, alpha=1.5, beta=30):
