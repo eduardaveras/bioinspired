@@ -178,6 +178,7 @@ class cube_GA:
             _info["best_fitness"] = self.get_best().fitness
             _info["best_cube"] = (str(self.get_best().best_face().tolist()))
             _info["best_moves"] = ' '.join(self.get_best().move_history)
+            _info["best_face"] = self.get_best().fitness_face
             _info["population"] = self.get_bests_fitness(n=len(self.population))
             _info["parents"] = self.get_bests_fitness(__list__=self.parents)
             _info["children"] = self.get_bests_fitness(__list__=self.children)
