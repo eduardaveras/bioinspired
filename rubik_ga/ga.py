@@ -2,6 +2,7 @@ from image_utils import *
 import cube as cb
 import random
 import imageio
+from multiprocessing import Pool
 
 class cubesToImage:
     def __init__(self, target_image_path="images/cabeca-gatinha-b.png", n_cubes_x=5, image_size=450, random_itens_size=10000):
@@ -27,7 +28,34 @@ class cubesToImage:
         self.bests = {}
         self.args = {}
 
+
+    def process_cube(self, args):
+        i, j = args
+        ga = cb.cube_GA(self.target_cubes[i][j], **self.args)
+        ga.run()
+        gen = ga.generation
+        best = ga.generation_info[gen]
+        print(f"{i*self.n_cubes_x + j} - Generations {gen} - Fitness: {ga.get_best().fitness}")
+        return i, j, best
+
     def run(self, args, filename=""):
+        self.args = args
+        self.bests = {}
+
+        with Pool() as pool:
+            results = pool.map(self.process_cube, [(i, j) for i in range(self.n_cubes_x) for j in range(self.n_cubes_x)])
+
+        for i, j, best in results:
+            if i not in self.bests:
+                self.bests[i] = {}
+            self.bests[i][j] = best
+
+        if filename != "":
+            import json
+            with open('runs/' + filename + '.json', 'w') as outfile:
+                json.dump(self.bests, outfile, indent=3)
+
+    def run_not_parallel(self, args, filename=""):
 
         self.args = args
 
