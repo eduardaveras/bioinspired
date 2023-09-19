@@ -25,8 +25,11 @@ class cubesToImage:
 
         self.gas = np.zeros((self.n_cubes_x, self.n_cubes_x), dtype=object)
         self.bests = {}
+        self.args = {}
 
     def run(self, args, filename=""):
+
+        self.args = args
 
         for i in range(self.n_cubes_x):
             self.bests[i] = {}
@@ -36,7 +39,7 @@ class cubesToImage:
                 gen = self.gas[i][j].generation
                 self.bests[i][j] = self.gas[i][j].generation_info[gen]
                 print(str(i) + ","+ str(j) + "-" + " Generations " + str(self.gas[i][j].generation) + "- Fitness: " + str(self.gas[i][j].get_best().fitness))
-                
+
         # write bests to json file
         if filename != "":
             import json
@@ -67,7 +70,6 @@ def cube_to_animation(target_cube, moves, filename="cube_moves", fixedFace=None,
     frames = [imageio.imread(frame) if not isinstance(frame, np.ndarray) else frame for frame in frames]
     if save:
         imageio.mimsave('images/' + filename + '.gif', frames, duration=0.5, loop=0)
-
 
 if __name__ == "__main__":
     cti = cubesToImage(n_cubes_x=5)
