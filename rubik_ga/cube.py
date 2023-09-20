@@ -120,7 +120,7 @@ class Cube(lib.Cube):
 
 class cube_GA:
     def __init__(self, target_gray_face, population_size=1000, mutation_rate=0.9,
-                 crossover_rate=0.3, max_generations=1000,
+                 crossover_rate=0.3, max_generations=500,
                  parent_pool_size=10, parents_number=4):
 
         self.target_gray_face = target_gray_face
@@ -150,13 +150,13 @@ class cube_GA:
         if __list__ is None:
             __list__ = self.population
 
-        return sorted(__list__, reverse=True)[:n]
+        return sorted(__list__, reverse=False)[:n]
 
     def get_bests_fitness(self, n=1, __list__=None):
         if __list__ is None:
             __list__ = self.population
 
-        list_ = sorted(__list__, reverse=True)[:n]
+        list_ = sorted(__list__, reverse=False)[:n]
         return [cube.fitness for cube in list_]
 
     def get_worst(self, __list__=None):
@@ -206,7 +206,7 @@ class cube_GA:
         self.population = [Cube(self.target_gray_face) for _ in range(self.population_size)]
 
     def get_survivors(self):
-        self.population = self.get_bests(n=self.population_size)
+        self.population = self.get_bests(__list__=self.population + self.children, n=self.population_size)
 
     def end_condition(self):
         if self.max_generations == self.generation:
@@ -269,5 +269,5 @@ if __name__ == "__main__":
                             [ 76,  76,  29],
                             [ 76,  29,  29]], dtype=np.uint8)
     
-    ga = cube_GA(test_target)
+    ga = cube_GA()
     ga.run(verbose=True, animate=False)

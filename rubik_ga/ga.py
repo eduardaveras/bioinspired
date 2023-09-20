@@ -22,7 +22,7 @@ class cubesToImage:
         self.target_gray_nearest = gray_nearest(image_to_gray_pixels(self.target_image, self.image_size, self.cube_size//3))
         self.target_color_cubes = image_gray_to_image_cubes_color(self.target_gray_nearest)
         self.target_cubes = gray_image_to_cubes(self.target_gray_nearest)
-        self.target_image_gray_cubes = cubes_to_image(self.target_cubes, stroke_width=0, size_times=10, stroke_color=255)
+        self.target_image_gray_cubes = cubes_to_image(self.target_cubes, stroke_width=1, size_times=10, stroke_color=255)
 
         self.gas = np.zeros((self.n_cubes_x, self.n_cubes_x), dtype=object)
         self.bests = {}
